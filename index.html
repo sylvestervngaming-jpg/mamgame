@@ -20,7 +20,7 @@
         <div class="rotate-icon">📱 ➔ 🔄</div>
         <h2>Vui lòng xoay ngang điện thoại</h2>
         <p>Để có trải nghiệm phiêu lưu tốt nhất cùng Mầm!</p>
-        <button id="btn-lock-landscape">🔄 BẬT TOÀN MÀN HÌNH NGANG</button>
+        <button id="btn-lock-landscape" type="button">🔄 BẬT TOÀN MÀN HÌNH NGANG</button>
     </div>
 
     <script>
@@ -42,15 +42,52 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const promptEl = document.getElementById('rotate-device-prompt');
             const btn = document.getElementById('btn-lock-landscape');
-            if (btn) {
-                btn.addEventListener('click', triggerLandscapeLock);
-                btn.addEventListener('touchstart', triggerLandscapeLock);
+
+            function checkOrientation() {
+                if (!promptEl) return;
+                // Kiểm tra xem có đang ở chế độ dọc không
+                const isPortrait = window.innerHeight > window.innerWidth;
+                const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth < 900 && isPortrait);
+                
+                if (isPortrait && isMobile) {
+                    promptEl.style.display = 'flex';
+                } else {
+                    promptEl.style.display = 'none';
+                }
             }
-            // Auto lock on first touch anywhere on screen
-            document.body.addEventListener('touchstart', function() {
-                triggerLandscapeLock();
-            }, { passive: true, once: false });
+
+            // Chặn đứng hoàn toàn sự kiện chạm xuyên qua Canvas bên dưới (Ghost Click)
+            ['touchstart', 'touchend', 'touchmove', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'click'].forEach(function(evtName) {
+                promptEl.addEventListener(evtName, function(e) {
+                    e.stopPropagation();
+                }, { passive: false });
+            });
+
+            if (btn) {
+                btn.addEventListener('pointerdown', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    triggerLandscapeLock();
+                    promptEl.style.display = 'none';
+                    setTimeout(checkOrientation, 350);
+                    setTimeout(checkOrientation, 800);
+                });
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            }
+
+            window.addEventListener('resize', checkOrientation);
+            window.addEventListener('orientationchange', checkOrientation);
+            if (screen.orientation) {
+                screen.orientation.addEventListener('change', checkOrientation);
+            }
+
+            // Kiểm tra ngay khi vừa nạp trang
+            checkOrientation();
         });
     </script>
 </body>

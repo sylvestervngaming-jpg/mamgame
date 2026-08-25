@@ -47,6 +47,8 @@ canvas {
     text-align: center;
     padding: 24px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    pointer-events: auto;
+    touch-action: none;
 }
 
 .rotate-icon {
@@ -78,6 +80,8 @@ canvas {
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0, 210, 211, 0.4);
     transition: transform 0.2s, box-shadow 0.2s;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 
 #btn-lock-landscape:active {
@@ -88,10 +92,4 @@ canvas {
 @keyframes rotatePulse {
     0%, 100% { transform: scale(1) rotate(0deg); }
     50% { transform: scale(1.15) rotate(-90deg); }
-}
-
-@media screen and (orientation: portrait) and (max-width: 1024px) {
-    #rotate-device-prompt {
-        display: flex;
-    }
 }
