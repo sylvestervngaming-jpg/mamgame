@@ -10,21 +10,30 @@ export default class AtmosphereFX {
             endX = scene.cameras.main.width * 6,
             topY = 0,
             bottomY = scene.cameras.main.height + 600,
-            rayCount = 8,
+            rayCount = 7,
             color = 0xfffae0,
             baseAlpha = 0.12,
             tilt = 350
         } = config;
 
+        // Đảm bảo texture hạt firefly luôn tồn tại để tránh hiện ô vuông xanh lá
+        if (!scene.textures.exists('firefly')) {
+            let g = scene.make.graphics({ x: 0, y: 0, add: false });
+            g.fillStyle(0xffffff, 1);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture('firefly', 8, 8);
+            g.destroy();
+        }
+
         let container = scene.add.container(0, 0).setDepth(8).setScrollFactor(0.7);
 
         for (let i = 0; i < rayCount; i++) {
             let rx = Phaser.Math.Between(startX, endX);
-            let topWidth = Phaser.Math.Between(60, 160);
-            let bottomWidth = topWidth * Phaser.Math.FloatBetween(2.0, 3.5);
+            let topWidth = Phaser.Math.Between(70, 150);
+            let bottomWidth = topWidth * Phaser.Math.FloatBetween(2.0, 3.0);
 
             let g = scene.add.graphics();
-            g.fillStyle(color, baseAlpha * Phaser.Math.FloatBetween(0.7, 1.3));
+            g.fillStyle(color, baseAlpha * Phaser.Math.FloatBetween(0.8, 1.2));
             g.beginPath();
             g.moveTo(rx, topY);
             g.lineTo(rx + topWidth, topY);
@@ -36,12 +45,11 @@ export default class AtmosphereFX {
 
             container.add(g);
 
-            // Hoạt ảnh lung linh nhấp nhô của từng tia sáng
             scene.tweens.add({
                 targets: g,
-                alpha: { from: g.alpha * 0.5, to: g.alpha * 1.5 },
-                x: { from: -15, to: 15 },
-                duration: Phaser.Math.Between(3000, 6000),
+                alpha: { from: g.alpha * 0.6, to: g.alpha * 1.4 },
+                x: { from: -10, to: 10 },
+                duration: Phaser.Math.Between(3500, 6000),
                 yoyo: true,
                 repeat: -1,
                 ease: 'Sine.easeInOut',
@@ -53,13 +61,13 @@ export default class AtmosphereFX {
         let dustEmitter = scene.add.particles(0, 0, 'firefly', {
             x: { min: startX, max: endX },
             y: { min: topY, max: bottomY },
-            speedX: { min: -15, max: 25 },
-            speedY: { min: -10, max: -35 },
-            scale: { start: 0.8, end: 0 },
-            alpha: { start: 0.6, end: 0 },
-            lifespan: 4500,
+            speedX: { min: -10, max: 20 },
+            speedY: { min: -5, max: -30 },
+            scale: { start: 0.7, end: 0 },
+            alpha: { start: 0.5, end: 0 },
+            lifespan: 4000,
             blendMode: 'ADD',
-            frequency: 180,
+            frequency: 200,
             tint: color
         }).setDepth(9).setScrollFactor(0.8);
 
@@ -117,26 +125,31 @@ export default class AtmosphereFX {
     }
 
     /**
-     * Tạo viền tối điện ảnh (Cinematic Vignette) cho màn hình
+     * Tạo viền tối điện ảnh (Cinematic Vignette) bằng Canvas Gradient siêu mượt không tạo ngấn viền
      * @param {Phaser.Scene} scene 
      */
     static createCinematicVignette(scene) {
         const w = scene.cameras.main.width;
         const h = scene.cameras.main.height;
 
-        let g = scene.add.graphics().setScrollFactor(0).setDepth(2450);
-        
-        // Vẽ 4 góc tối mềm mại
-        let maxRadius = Math.sqrt(w*w + h*h) / 2;
-        let ringCount = 12;
-        for (let i = ringCount; i >= 0; i--) {
-            let progress = i / ringCount; // 1 -> 0
-            let r = maxRadius * (0.6 + progress * 0.4);
-            let alpha = Math.pow(progress, 2.2) * 0.55;
-            g.lineStyle(maxRadius * 0.08, 0x050811, alpha);
-            g.strokeCircle(w / 2, h / 2, r);
+        if (!scene.textures.exists('vignette_canvas_texture')) {
+            let canvas = scene.textures.createCanvas('vignette_canvas_texture', w, h);
+            let ctx = canvas.getContext();
+            
+            // Radial gradient từ trong suốt ra tối nhẹ ở 4 góc
+            let radGradient = ctx.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, Math.max(w, h) * 0.7);
+            radGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            radGradient.addColorStop(0.65, 'rgba(0, 0, 0, 0.1)');
+            radGradient.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            
+            ctx.fillStyle = radGradient;
+            ctx.fillRect(0, 0, w, h);
+            canvas.refresh();
         }
 
-        return g;
+        return scene.add.image(w / 2, h / 2, 'vignette_canvas_texture')
+            .setScrollFactor(0)
+            .setDepth(2450)
+            .setAlpha(0.65);
     }
 }

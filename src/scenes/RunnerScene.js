@@ -77,22 +77,7 @@ export default class RunnerScene extends Phaser.Scene {
         // NÃ¡Â»Ân Ã„â€˜en thÃ¡ÂºÂ³m che lÃ¡ÂºÂ¥p toÃƒÂ n bÃ¡Â»â„¢ thÃ¡ÂºÂ¿ giÃ¡Â»â€ºi ngÃ¡ÂºÂ§m bÃƒÂªn dÃ†Â°Ã¡Â»â€ºi mÃƒÂ n hÃƒÂ¬nh (dÃƒÂ nh cho cÃƒÂ¡i dÃ¡Â»â€˜c sÃƒÂ¢u 1000px)
         // Removed underground rect
 
-        // Midground Ruins (Hậu cảnh xa vừa) - Direct Graphics (No huge texture)
-        let mgGraphics = this.add.graphics().setScrollFactor(0.4);
-        mgGraphics.fillStyle(0x101015, 1);
-
-        for(let x = -200; x < w * 6; x += 300) {
-            let width = 120;
-            let height = 300;
-            mgGraphics.fillRect(x, h - height, width, height + 1500);
-            
-            mgGraphics.beginPath();
-            mgGraphics.moveTo(x, h - height);
-            mgGraphics.lineTo(x + 40, h - height - 20);
-            mgGraphics.lineTo(x + 80, h - height + 10);
-            mgGraphics.lineTo(x + width, h - height);
-            mgGraphics.fillPath();
-        }
+        // Midground Ruins: cleaned up to show full artist background
 
         // --- NƯỚC ĐỘC ---
 // HÃ¡Â»â€˜ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c Ã¡Â»Å¸ giÃ¡Â»Â¯a (1536 -> 2048)

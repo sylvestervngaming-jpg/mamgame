@@ -101,6 +101,14 @@
       this.registry.set("affinity_map3", 50);
       this.registry.set("affinity_map4", 50);
       this.registry.set("affinity_map5", 50);
+      AssetManager.generateAndSave(this, "firefly", 8, 8, (g) => {
+        g.fillStyle(16777215, 1);
+        g.fillCircle(4, 4, 4);
+      });
+      AssetManager.generateAndSave(this, "smoke", 16, 16, (g) => {
+        g.fillStyle(16777215, 0.5);
+        g.fillCircle(8, 8, 8);
+      });
       this.scene.start("MenuScene");
     }
   };
@@ -204,18 +212,25 @@
         endX = scene.cameras.main.width * 6,
         topY = 0,
         bottomY = scene.cameras.main.height + 600,
-        rayCount = 8,
+        rayCount = 7,
         color = 16775904,
         baseAlpha = 0.12,
         tilt = 350
       } = config2;
+      if (!scene.textures.exists("firefly")) {
+        let g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(16777215, 1);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("firefly", 8, 8);
+        g.destroy();
+      }
       let container = scene.add.container(0, 0).setDepth(8).setScrollFactor(0.7);
       for (let i = 0; i < rayCount; i++) {
         let rx = Phaser.Math.Between(startX, endX);
-        let topWidth = Phaser.Math.Between(60, 160);
-        let bottomWidth = topWidth * Phaser.Math.FloatBetween(2, 3.5);
+        let topWidth = Phaser.Math.Between(70, 150);
+        let bottomWidth = topWidth * Phaser.Math.FloatBetween(2, 3);
         let g = scene.add.graphics();
-        g.fillStyle(color, baseAlpha * Phaser.Math.FloatBetween(0.7, 1.3));
+        g.fillStyle(color, baseAlpha * Phaser.Math.FloatBetween(0.8, 1.2));
         g.beginPath();
         g.moveTo(rx, topY);
         g.lineTo(rx + topWidth, topY);
@@ -227,9 +242,9 @@
         container.add(g);
         scene.tweens.add({
           targets: g,
-          alpha: { from: g.alpha * 0.5, to: g.alpha * 1.5 },
-          x: { from: -15, to: 15 },
-          duration: Phaser.Math.Between(3e3, 6e3),
+          alpha: { from: g.alpha * 0.6, to: g.alpha * 1.4 },
+          x: { from: -10, to: 10 },
+          duration: Phaser.Math.Between(3500, 6e3),
           yoyo: true,
           repeat: -1,
           ease: "Sine.easeInOut",
@@ -239,13 +254,13 @@
       let dustEmitter = scene.add.particles(0, 0, "firefly", {
         x: { min: startX, max: endX },
         y: { min: topY, max: bottomY },
-        speedX: { min: -15, max: 25 },
-        speedY: { min: -10, max: -35 },
-        scale: { start: 0.8, end: 0 },
-        alpha: { start: 0.6, end: 0 },
-        lifespan: 4500,
+        speedX: { min: -10, max: 20 },
+        speedY: { min: -5, max: -30 },
+        scale: { start: 0.7, end: 0 },
+        alpha: { start: 0.5, end: 0 },
+        lifespan: 4e3,
         blendMode: "ADD",
-        frequency: 180,
+        frequency: 200,
         tint: color
       }).setDepth(9).setScrollFactor(0.8);
       return { container, dustEmitter };
@@ -289,23 +304,24 @@
       };
     }
     /**
-     * Tạo viền tối điện ảnh (Cinematic Vignette) cho màn hình
+     * Tạo viền tối điện ảnh (Cinematic Vignette) bằng Canvas Gradient siêu mượt không tạo ngấn viền
      * @param {Phaser.Scene} scene 
      */
     static createCinematicVignette(scene) {
       const w = scene.cameras.main.width;
       const h = scene.cameras.main.height;
-      let g = scene.add.graphics().setScrollFactor(0).setDepth(2450);
-      let maxRadius = Math.sqrt(w * w + h * h) / 2;
-      let ringCount = 12;
-      for (let i = ringCount; i >= 0; i--) {
-        let progress = i / ringCount;
-        let r = maxRadius * (0.6 + progress * 0.4);
-        let alpha = Math.pow(progress, 2.2) * 0.55;
-        g.lineStyle(maxRadius * 0.08, 329745, alpha);
-        g.strokeCircle(w / 2, h / 2, r);
+      if (!scene.textures.exists("vignette_canvas_texture")) {
+        let canvas = scene.textures.createCanvas("vignette_canvas_texture", w, h);
+        let ctx = canvas.getContext();
+        let radGradient = ctx.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, Math.max(w, h) * 0.7);
+        radGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+        radGradient.addColorStop(0.65, "rgba(0, 0, 0, 0.1)");
+        radGradient.addColorStop(1, "rgba(0, 0, 0, 0.45)");
+        ctx.fillStyle = radGradient;
+        ctx.fillRect(0, 0, w, h);
+        canvas.refresh();
       }
-      return g;
+      return scene.add.image(w / 2, h / 2, "vignette_canvas_texture").setScrollFactor(0).setDepth(2450).setAlpha(0.65);
     }
   };
 
@@ -524,19 +540,6 @@
       });
       for (let bi = 0; bi < 6; bi++) {
         this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
-      }
-      let mgGraphics = this.add.graphics().setScrollFactor(0.4);
-      mgGraphics.fillStyle(1052693, 1);
-      for (let x = -200; x < w * 6; x += 300) {
-        let width = 120;
-        let height = 300;
-        mgGraphics.fillRect(x, h - height, width, height + 1500);
-        mgGraphics.beginPath();
-        mgGraphics.moveTo(x, h - height);
-        mgGraphics.lineTo(x + 40, h - height - 20);
-        mgGraphics.lineTo(x + 80, h - height + 10);
-        mgGraphics.lineTo(x + width, h - height);
-        mgGraphics.fillPath();
       }
       this.add.rectangle(1536, h - 30, 512, 1500, 1703970, 0.95).setOrigin(0, 0);
       this.add.rectangle(1536, h - 45, 512, 40, 3342413, 0.7).setOrigin(0, 0);

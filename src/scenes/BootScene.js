@@ -33,6 +33,15 @@ export default class BootScene extends Phaser.Scene {
         this.registry.set('affinity_map4', 50);
         this.registry.set('affinity_map5', 50);
 
+                // Khởi tạo các texture hạt phát sáng cốt lõi
+        AssetManager.generateAndSave(this, 'firefly', 8, 8, (g) => {
+            g.fillStyle(0xffffff, 1);
+            g.fillCircle(4, 4, 4);
+        });
+        AssetManager.generateAndSave(this, 'smoke', 16, 16, (g) => {
+            g.fillStyle(0xffffff, 0.5);
+            g.fillCircle(8, 8, 8);
+        });
         this.scene.start('MenuScene');
     }
 }
