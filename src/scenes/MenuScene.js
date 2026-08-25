@@ -13,6 +13,9 @@ export default class MenuScene extends Phaser.Scene {
                 if (!this.scale.isFullscreen && this.scale.startFullscreen) {
                     this.scale.startFullscreen();
                 }
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
             } catch (e) {}
             this.registry.set('health', 100);
             this.registry.set('water', 50);

@@ -524,6 +524,15 @@
       this.fKey = this.input.keyboard.addKey("F");
       this.stumps = [];
       this.createStump(1480, 1536, 512);
+      this.boxPrompt.setInteractive({ useHandCursor: true });
+      this.boxPrompt.on("pointerdown", () => {
+        if (this.player.body.onFloor()) {
+          this.isAttachedToBox = !this.isAttachedToBox;
+          if (this.isAttachedToBox) {
+            this.boxSide = this.box.x > this.player.x ? "right" : "left";
+          }
+        }
+      });
       let pillar1Bottom = h - 260;
       this.wallJumpLeft = this.add.rectangle(5100, 0, 80, pillar1Bottom, 328968, 1).setOrigin(0, 0);
       let pillar2Top = 150;
@@ -1041,7 +1050,7 @@
       } else if (isNearBox) {
         this.boxPrompt.x = this.box.x;
         this.boxPrompt.y = this.box.y - 80;
-        this.boxPrompt.setText("B\u1EA5m F \u0111\u1EC3 C\u1EA7m h\u1ED9p");
+        this.boxPrompt.setText("\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 C\u1EA7m h\u1ED9p");
         this.boxPrompt.setAlpha(1);
         if (Phaser.Input.Keyboard.JustDown(this.fKey) && this.player.body.onFloor()) {
           this.isAttachedToBox = true;
@@ -1058,8 +1067,7 @@
           if (isNearStump) {
             prompt.setAlpha(1);
             if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
-              stump.isBloomed = true;
-              prompt.setAlpha(0);
+              this.reviveStump(stump, prompt);
               let moss1 = this.add.ellipse(-6, -18, 14, 7, 1730099, 0.5);
               let moss2 = this.add.ellipse(8, -30, 10, 5, 2258756, 0.4);
               let leaf1 = this.add.triangle(18, -45, 0, 14, 16, 7, 8, 0, 2984526).setOrigin(0.5, 1).setAngle(25);
@@ -1317,6 +1325,65 @@
       let y2 = this.getTerrainY(x + 5);
       return (y2 - y1) / 10;
     }
+    reviveStump(stump, prompt) {
+      if (stump.isBloomed) return;
+      stump.isBloomed = true;
+      prompt.setAlpha(0);
+      let moss1 = this.add.ellipse(-6, -18, 14, 7, 1730099, 0.5);
+      let moss2 = this.add.ellipse(8, -30, 10, 5, 2258756, 0.4);
+      let leaf1 = this.add.triangle(18, -45, 0, 14, 16, 7, 8, 0, 2984526).setOrigin(0.5, 1).setAngle(25);
+      let leaf2 = this.add.triangle(-12, -48, 0, 12, 14, 6, 7, 0, 4039517).setOrigin(0.5, 1).setAngle(-20);
+      stump.add([moss1, moss2, leaf1, leaf2]);
+      [moss1, moss2, leaf1, leaf2].forEach((item, i) => {
+        item.setScale(0);
+        this.tweens.add({ targets: item, scale: 1, duration: 500, delay: i * 120, ease: "Back.easeOut" });
+      });
+      let bridgeY = this.cameras.main.height - 112;
+      let bridgeImg = this.add.image(stump.bridgeStartX, bridgeY - 20, "map1_vine_bridge").setOrigin(0, 0);
+      bridgeImg.setCrop(0, 0, 0, 100);
+      bridgeImg.setDisplaySize(stump.bridgeLength, 100);
+      let drawObj = { w: 0 };
+      this.tweens.add({
+        targets: drawObj,
+        w: stump.bridgeLength,
+        duration: 1500,
+        ease: "Linear",
+        onUpdate: () => {
+          let progress = drawObj.w / stump.bridgeLength;
+          bridgeImg.setCrop(0, 0, 750 * progress, 100);
+        },
+        onComplete: () => {
+          allLeaves.forEach((leaf, i) => {
+            this.tweens.add({
+              targets: leaf,
+              alpha: 0.85,
+              scale: 1,
+              duration: 300,
+              delay: i * 30,
+              ease: "Back.easeOut"
+            });
+          });
+        }
+      });
+      let allLeaves = [];
+      for (let lx = 50; lx < stump.bridgeLength; lx += Phaser.Math.Between(30, 70)) {
+        let progress = lx / stump.bridgeLength;
+        let curveY = Math.sin(progress * Math.PI) * 25;
+        let leaf = this.add.ellipse(stump.bridgeStartX + lx, bridgeY + curveY + 5 + Phaser.Math.Between(0, 15), 10, 20, 5227117).setOrigin(0.5, 0).setAlpha(0);
+        if (Math.random() > 0.5) leaf.setAngle(Phaser.Math.Between(-30, 30));
+        allLeaves.push(leaf);
+      }
+      let bridgePhysics = this.add.rectangle(stump.bridgeStartX, bridgeY + 2, stump.bridgeLength, 200, 0, 0).setOrigin(0, 0);
+      this.physics.add.existing(bridgePhysics, true);
+      this.physics.add.collider(this.player, bridgePhysics);
+      let emitter = this.add.particles(stump.bridgeStartX, bridgeY + 2, "firefly", {
+        speed: { min: -80, max: 80 },
+        scale: { start: 0.8, end: 0 },
+        lifespan: 2500,
+        blendMode: "ADD"
+      });
+      emitter.explode(25);
+    }
     createStump(x, bridgeStartX, bridgeLength) {
       let h = this.cameras.main.height;
       let stumpContainer = this.add.container(x, h - 110);
@@ -1330,7 +1397,20 @@
       stumpContainer.isBloomed = false;
       stumpContainer.bridgeStartX = bridgeStartX;
       stumpContainer.bridgeLength = bridgeLength;
-      let prompt = this.add.text(x, h - 200, "B\u1EA5m F \u0111\u1EC3 h\u1ED3i sinh g\u1ED1c c\xE2y", { font: "bold 18px Arial", fill: "#ffffff", backgroundColor: "#000000aa", padding: { x: 8, y: 5 } }).setOrigin(0.5).setAlpha(0);
+      let prompt = this.add.text(x, h - 200, "\u{1F331} Ch\u1EA1m \u0111\u1EC3 h\u1ED3i sinh c\xE2y", {
+        font: "bold 18px Arial",
+        fill: "#00d2d3",
+        backgroundColor: "#1e272e",
+        padding: { x: 14, y: 8 }
+      }).setOrigin(0.5).setAlpha(0).setDepth(200).setInteractive({ useHandCursor: true });
+      let triggerRevival = () => {
+        if (!stumpContainer.isBloomed && Math.abs(this.player.x - x) <= 200) {
+          this.reviveStump(stumpContainer, prompt);
+        }
+      };
+      prompt.on("pointerdown", triggerRevival);
+      stumpContainer.setInteractive(new Phaser.Geom.Rectangle(-40, -80, 80, 80), Phaser.Geom.Rectangle.Contains);
+      stumpContainer.on("pointerdown", triggerRevival);
       this.stumps = this.stumps || [];
       this.stumps.push({ container: stumpContainer, prompt });
     }
@@ -1569,6 +1649,10 @@
           if (!this.scale.isFullscreen && this.scale.startFullscreen) {
             this.scale.startFullscreen();
           }
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock("landscape").catch(() => {
+            });
+          }
         } catch (e) {
         }
         this.registry.set("health", 100);
@@ -1673,13 +1757,12 @@
       this.isLeft = false;
       this.isRight = false;
       this.isJump = false;
-      this.isInteract = false;
       const w = scene.cameras.main.width;
       const h = scene.cameras.main.height;
-      let btnY = h - 85;
-      let leftX = 85;
-      let rightX = 205;
-      let btnRadius = 42;
+      let btnY = h - 90;
+      let leftX = 90;
+      let rightX = 215;
+      let btnRadius = 45;
       this.btnLeft = this.createTouchButton(leftX, btnY, btnRadius, "\u25C4", 3094080, () => {
         this.isLeft = true;
       }, () => {
@@ -1690,34 +1773,23 @@
       }, () => {
         this.isRight = false;
       });
-      let jumpX = w - 90;
-      let jumpY = h - 90;
-      let jumpRadius = 48;
+      let jumpX = w - 100;
+      let jumpY = h - 95;
+      let jumpRadius = 52;
       this.btnJump = this.createTouchButton(jumpX, jumpY, jumpRadius, "\u2B06", 53971, () => {
         this.isJump = true;
       }, () => {
         this.isJump = false;
       }, 1976110);
-      let interactX = w - 90;
-      let interactY = h - 205;
-      let interactRadius = 38;
-      this.btnInteract = this.createTouchButton(interactX, interactY, interactRadius, "\u{1F4AC} F", 15105570, () => {
-        this.isInteract = true;
-        if (scene.fKey) {
-          scene.input.keyboard.emit("keydown-F");
-        }
-      }, () => {
-        this.isInteract = false;
-      }, "#ffffff");
-      this.add([this.btnLeft, this.btnRight, this.btnJump, this.btnInteract]);
+      this.add([this.btnLeft, this.btnRight, this.btnJump]);
       const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0 || scene.sys.game.device.input.touch;
       this.setVisible(isTouchDevice);
     }
     createTouchButton(x, y, radius, label, color, onDown, onUp, textColor = "#ffffff") {
       let container = this.scene.add.container(x, y);
-      let circle = this.scene.add.circle(0, 0, radius, color, 0.75).setStrokeStyle(3, 16777215, 0.8).setInteractive({ useHandCursor: true });
+      let circle = this.scene.add.circle(0, 0, radius, color, 0.75).setStrokeStyle(3, 16777215, 0.85).setInteractive({ useHandCursor: true });
       let text = this.scene.add.text(0, 0, label, {
-        font: "bold 24px Arial",
+        font: "bold 28px Arial",
         fill: textColor
       }).setOrigin(0.5);
       container.add([circle, text]);
@@ -2747,12 +2819,23 @@
       scene.add.existing(this);
       scene.physics.add.existing(this, true);
       this.setOrigin(0.5, 1);
-      this.promptText = scene.add.text(x, y - 75, "B\u1EA5m F", {
+      this.promptText = scene.add.text(x, y - 80, "\u{1F4AC} Ch\u1EA1m \u0111\u1EC3 n\xF3i chuy\u1EC7n", {
         font: "bold 16px Arial",
-        fill: "#ffffff",
-        backgroundColor: "#000000",
-        padding: { x: 8, y: 4 }
-      }).setOrigin(0.5).setAlpha(0).setDepth(100);
+        fill: "#00d2d3",
+        backgroundColor: "#1e272e",
+        padding: { x: 12, y: 6 }
+      }).setOrigin(0.5).setAlpha(0).setDepth(100).setInteractive({ useHandCursor: true });
+      this.promptText.on("pointerdown", () => {
+        if (this.isPlayerNear && !scene.dialogueBox?.active) {
+          this.interact();
+        }
+      });
+      this.setInteractive({ useHandCursor: true });
+      this.on("pointerdown", () => {
+        if (this.isPlayerNear && !scene.dialogueBox?.active) {
+          this.interact();
+        }
+      });
       this.isPlayerNear = false;
       scene.input.keyboard.on("keydown-F", () => {
         if (this.isPlayerNear && !scene.dialogueBox?.active) {

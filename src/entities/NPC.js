@@ -15,13 +15,26 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
 
         this.setOrigin(0.5, 1);
 
-        // UI phím tương tác (F)
-        this.promptText = scene.add.text(x, y - 75, 'Bấm F', {
+        // UI bóng thoại tương tác (Chạm trực tiếp hoặc bấm F)
+        this.promptText = scene.add.text(x, y - 80, '💬 Chạm để nói chuyện', {
             font: 'bold 16px Arial',
-            fill: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 8, y: 4 }
-        }).setOrigin(0.5).setAlpha(0).setDepth(100);
+            fill: '#00d2d3',
+            backgroundColor: '#1e272e',
+            padding: { x: 12, y: 6 }
+        }).setOrigin(0.5).setAlpha(0).setDepth(100).setInteractive({ useHandCursor: true });
+
+        this.promptText.on('pointerdown', () => {
+            if (this.isPlayerNear && !scene.dialogueBox?.active) {
+                this.interact();
+            }
+        });
+
+        this.setInteractive({ useHandCursor: true });
+        this.on('pointerdown', () => {
+            if (this.isPlayerNear && !scene.dialogueBox?.active) {
+                this.interact();
+            }
+        });
 
         this.isPlayerNear = false;
 
