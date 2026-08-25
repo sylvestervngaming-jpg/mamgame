@@ -309,14 +309,13 @@ export default class RunnerScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.wallJumpRight);
 
         // Player Shadow & Aura (Polish)
-        this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0x000000, 0.65).setDepth(9);
-        this.playerGroundLight = AtmosphereFX.createDynamicPointLight(this, 200, h - 110, 140, 0x2ecc71, 0.22);
-        this.registry.events.on('changedata-playerColor', (parent, color) => {
-            if (this.playerGroundLight) this.playerGroundLight.setTint(color);
-        });
-        this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
+        // Shadow duoi dat
+        let initialColor = this.registry.get('playerColor') || 0x2ecc71;
+        this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0x000000, 0.65).setDepth(8);
+        // DUY NHAT 1 AURA
+        this.aura = this.add.circle(200, h - 135, 34, initialColor, 0.35).setBlendMode('ADD').setDepth(9);
 
-        // TÃ¡ÂºÂ¡o texture hÃƒÂ¬nh trÃƒÂ²n xanh lÃƒÂ¡ nÃ¡ÂºÂ¿u chÃ†Â°a cÃƒÂ³
+        // Texture Mam
         AssetManager.generateAndSave(this, 'green_circle', 50, 50, (g) => {
             g.fillStyle(0xffffff);
             g.fillCircle(25, 25, 25);
@@ -324,20 +323,15 @@ export default class RunnerScene extends Phaser.Scene {
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
-        // ThÃƒÂªm hÃƒÂ¬nh trÃƒÂ²n xanh lÃƒÂ¡ lÃƒÂ m Sprite tÃ¡ÂºÂ¡m thÃ¡Â»Âi
-        let initialColor = this.registry.get('playerColor') || 0x2ecc71;
-        if (this.aura) this.aura.setFillStyle(initialColor, 0.15);
         this.playerSprite = this.add.sprite(200, h - 150, 'green_circle').setDepth(10);
         this.playerSprite.setTint(initialColor);
-        this.registry.events.on('changedata-playerColor', (parent, color) => {
-            if (this.playerSprite) this.playerSprite.setTint(color);
-            if (this.aura) this.aura.setFillStyle(color, 0.15);
-        });
         this.playerSprite.setOrigin(0.5, 1);
         this.playerSprite.baseScale = 1;
         this.playerSprite.setScale(this.playerSprite.baseScale);
-
-        // ThÃƒÂªm hÃ¡ÂºÂ¡t Ã„â€˜om Ã„â€˜ÃƒÂ³m bay quanh ngÃ†Â°Ã¡Â»Âi
+        this.registry.events.on('changedata-playerColor', (parent, color) => {
+            if (this.playerSprite) this.playerSprite.setTint(color);
+            if (this.aura) this.aura.setFillStyle(color, 0.35);
+        });
         this.playerEmitter = this.add.particles(0, 0, 'firefly', {
             speed: { min: -15, max: 15 },
             scale: { start: 0.6, end: 0 },
@@ -677,9 +671,7 @@ export default class RunnerScene extends Phaser.Scene {
         // Sync sprite to invisible physics body LUÃƒâ€N LUÃƒâ€N CHÃ¡ÂºÂ Y
         this.playerSprite.x = this.player.x;
         this.playerSprite.y = this.player.y + 40;
-        if (this.playerBloom) {
-            this.playerBloom.update(this.player.x, this.player.y);
-        }
+        if (this.aura) { this.aura.setPosition(this.playerSprite.x, this.playerSprite.y - 25); }
 
         // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
         let groundY = this.getTerrainY(this.player.x);

@@ -203,12 +203,6 @@
   var AtmosphereFX = class {
     /**
      * Cập nhật bóng đổ nghiêng thời gian thực (Dynamic Directional Shadow) theo góc chiếu tia sáng
-     * @param {Phaser.GameObjects.Shape} shadow 
-     * @param {number} entityX 
-     * @param {number} entityY 
-     * @param {number} groundY 
-     * @param {number} slope 
-     * @param {number} lightAngleFactor 
      */
     static updateDirectionalShadow(shadow, entityX, entityY, groundY, slope = 0, lightAngleFactor = 0.45) {
       if (!shadow) return;
@@ -223,34 +217,7 @@
       shadow.setAlpha(alpha);
     }
     /**
-     * Tạo nguồn sáng điểm động thời gian thực (Dynamic Realtime Point Light)
-     * @param {Phaser.Scene} scene 
-     * @param {number} x 
-     * @param {number} y 
-     * @param {number} radius 
-     * @param {number} color 
-     * @param {number} intensity 
-     */
-    static createDynamicPointLight(scene, x, y, radius = 220, color = 16775904, intensity = 0.35) {
-      if (!scene.textures.exists("point_light_texture")) {
-        let canvas = scene.textures.createCanvas("point_light_texture", 256, 256);
-        let ctx = canvas.getContext();
-        let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-        rad.addColorStop(0, "rgba(255, 255, 255, 1.0)");
-        rad.addColorStop(0.3, "rgba(255, 255, 255, 0.6)");
-        rad.addColorStop(0.7, "rgba(255, 255, 255, 0.15)");
-        rad.addColorStop(1, "rgba(255, 255, 255, 0)");
-        ctx.fillStyle = rad;
-        ctx.fillRect(0, 0, 256, 256);
-        canvas.refresh();
-      }
-      let light = scene.add.image(x, y, "point_light_texture").setDisplaySize(radius * 2, radius * 2).setTint(color).setAlpha(intensity).setBlendMode("ADD").setDepth(7);
-      return light;
-    }
-    /**
      * Tạo các vệt sáng chiếu xuyên không gian (God Rays / Volumetric Light Beams)
-     * @param {Phaser.Scene} scene 
-     * @param {Object} config { x, y, count, width, height, angle, color, alpha }
      */
     static createGodRays(scene, config2 = {}) {
       const {
@@ -312,57 +279,7 @@
       return { container, dustEmitter };
     }
     /**
-     * Tạo vầng hào quang phát sáng 3 lớp (3-Tier Dynamic Bloom) cho nhân vật Mầm
-     * @param {Phaser.Scene} scene 
-     * @param {Phaser.GameObjects.Sprite} targetSprite 
-     */
-    static createPlayerBloom(scene, targetSprite) {
-      let initialColor = scene.registry.get("playerColor") || 3066993;
-      if (!scene.textures.exists("soft_radial_glow")) {
-        let canvas = scene.textures.createCanvas("soft_radial_glow", 256, 256);
-        let ctx = canvas.getContext();
-        let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-        rad.addColorStop(0, "rgba(255, 255, 255, 1.0)");
-        rad.addColorStop(0.25, "rgba(255, 255, 255, 0.6)");
-        rad.addColorStop(0.55, "rgba(255, 255, 255, 0.2)");
-        rad.addColorStop(1, "rgba(255, 255, 255, 0)");
-        ctx.fillStyle = rad;
-        ctx.fillRect(0, 0, 256, 256);
-        canvas.refresh();
-      }
-      let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(9);
-      let innerGlow = scene.add.image(0, 0, "soft_radial_glow").setDisplaySize(90, 90).setTint(initialColor).setAlpha(0.6).setBlendMode("ADD");
-      let outerGlow = scene.add.image(0, 0, "soft_radial_glow").setDisplaySize(180, 180).setTint(initialColor).setAlpha(0.3).setBlendMode("ADD");
-      container.add([outerGlow, innerGlow]);
-      scene.tweens.add({
-        targets: outerGlow,
-        scaleX: 1.25,
-        scaleY: 1.25,
-        alpha: 0.15,
-        duration: 1500,
-        yoyo: true,
-        repeat: -1,
-        ease: "Sine.easeInOut"
-      });
-      let colorListener = (parent, color) => {
-        innerGlow.setTint(color);
-        outerGlow.setTint(color);
-      };
-      scene.registry.events.on("changedata-playerColor", colorListener);
-      return {
-        container,
-        update: (x, y) => {
-          container.setPosition(x, y - 25);
-        },
-        destroy: () => {
-          scene.registry.events.off("changedata-playerColor", colorListener);
-          container.destroy();
-        }
-      };
-    }
-    /**
-     * Tạo viền tối điện ảnh (Cinematic Vignette) bằng Canvas Gradient siêu mượt không tạo ngấn viền
-     * @param {Phaser.Scene} scene 
+     * Tạo viền tối điện ảnh (Cinematic Vignette)
      */
     static createCinematicVignette(scene) {
       const w = scene.cameras.main.width;
@@ -771,29 +688,24 @@
       this.physics.add.collider(this.player, this.groundGroup);
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
-      this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0, 0.65).setDepth(9);
-      this.playerGroundLight = AtmosphereFX.createDynamicPointLight(this, 200, h - 110, 140, 3066993, 0.22);
-      this.registry.events.on("changedata-playerColor", (parent, color) => {
-        if (this.playerGroundLight) this.playerGroundLight.setTint(color);
-      });
-      this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
+      let initialColor = this.registry.get("playerColor") || 3066993;
+      this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0, 0.65).setDepth(8);
+      this.aura = this.add.circle(200, h - 135, 34, initialColor, 0.35).setBlendMode("ADD").setDepth(9);
       AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
         g.fillStyle(16777215);
         g.fillCircle(25, 25, 25);
       });
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
-      let initialColor = this.registry.get("playerColor") || 3066993;
-      if (this.aura) this.aura.setFillStyle(initialColor, 0.15);
       this.playerSprite = this.add.sprite(200, h - 150, "green_circle").setDepth(10);
       this.playerSprite.setTint(initialColor);
-      this.registry.events.on("changedata-playerColor", (parent, color) => {
-        if (this.playerSprite) this.playerSprite.setTint(color);
-        if (this.aura) this.aura.setFillStyle(color, 0.15);
-      });
       this.playerSprite.setOrigin(0.5, 1);
       this.playerSprite.baseScale = 1;
       this.playerSprite.setScale(this.playerSprite.baseScale);
+      this.registry.events.on("changedata-playerColor", (parent, color) => {
+        if (this.playerSprite) this.playerSprite.setTint(color);
+        if (this.aura) this.aura.setFillStyle(color, 0.35);
+      });
       this.playerEmitter = this.add.particles(0, 0, "firefly", {
         speed: { min: -15, max: 15 },
         scale: { start: 0.6, end: 0 },
@@ -1066,8 +978,8 @@
     update() {
       this.playerSprite.x = this.player.x;
       this.playerSprite.y = this.player.y + 40;
-      if (this.playerBloom) {
-        this.playerBloom.update(this.player.x, this.player.y);
+      if (this.aura) {
+        this.aura.setPosition(this.playerSprite.x, this.playerSprite.y - 25);
       }
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);

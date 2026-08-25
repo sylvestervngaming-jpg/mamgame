@@ -1,4 +1,76 @@
-export default class AtmosphereFX {
+﻿const fs = require('fs');
+
+// 1. Clean up RunnerScene.js
+let runner = fs.readFileSync('src/scenes/RunnerScene.js', 'utf8');
+
+// Replace lines 311-335 directly
+const lines = runner.split('\n');
+
+// Find where shadow is created
+let shadowIdx = -1;
+for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('this.shadow = this.add.ellipse')) {
+        shadowIdx = i;
+        break;
+    }
+}
+
+console.log('Found shadow in RunnerScene at line:', shadowIdx + 1);
+
+if (shadowIdx !== -1) {
+    // Find where playerEmitter is
+    let emitterIdx = -1;
+    for (let j = shadowIdx; j < shadowIdx + 40; j++) {
+        if (lines[j].includes('this.playerEmitter = this.add.particles')) {
+            emitterIdx = j;
+            break;
+        }
+    }
+
+    if (emitterIdx !== -1) {
+        const singleAuraSetup = [
+            "        // Shadow duoi dat",
+            "        let initialColor = this.registry.get('playerColor') || 0x2ecc71;",
+            "        this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0x000000, 0.65).setDepth(8);",
+            "        // DUY NHAT 1 AURA",
+            "        this.aura = this.add.circle(200, h - 135, 34, initialColor, 0.35).setBlendMode('ADD').setDepth(9);",
+            "",
+            "        // Texture Mam",
+            "        AssetManager.generateAndSave(this, 'green_circle', 50, 50, (g) => {",
+            "            g.fillStyle(0xffffff);",
+            "            g.fillCircle(25, 25, 25);",
+            "        });",
+            "        this.player.body.setGravityY(1200);",
+            "        this.player.body.setCollideWorldBounds(true);",
+            "",
+            "        this.playerSprite = this.add.sprite(200, h - 150, 'green_circle').setDepth(10);",
+            "        this.playerSprite.setTint(initialColor);",
+            "        this.playerSprite.setOrigin(0.5, 1);",
+            "        this.playerSprite.baseScale = 1;",
+            "        this.playerSprite.setScale(this.playerSprite.baseScale);",
+            "        this.registry.events.on('changedata-playerColor', (parent, color) => {",
+            "            if (this.playerSprite) this.playerSprite.setTint(color);",
+            "            if (this.aura) this.aura.setFillStyle(color, 0.35);",
+            "        });"
+        ];
+
+        lines.splice(shadowIdx, emitterIdx - shadowIdx, ...singleAuraSetup);
+    }
+}
+
+let newRunnerCode = lines.join('\n');
+
+// Clean update() in RunnerScene
+newRunnerCode = newRunnerCode.replace(
+    /if \(this\.playerBloom\) \{\s*this\.playerBloom\.update\(.*?\);\s*\}/g,
+    "if (this.aura) { this.aura.setPosition(this.playerSprite.x, this.playerSprite.y - 25); }"
+);
+
+fs.writeFileSync('src/scenes/RunnerScene.js', newRunnerCode, 'utf8');
+
+// 2. Clean AtmosphereFX.js: remove createPlayerBloom and createDynamicPointLight
+let atmo = fs.readFileSync('src/utils/AtmosphereFX.js', 'utf8');
+const atmoClean = `export default class AtmosphereFX {
     /**
      * Cập nhật bóng đổ nghiêng thời gian thực (Dynamic Directional Shadow) theo góc chiếu tia sáng
      */
@@ -114,3 +186,12 @@ export default class AtmosphereFX {
             .setAlpha(0.65);
     }
 }
+`;
+fs.writeFileSync('src/utils/AtmosphereFX.js', atmoClean, 'utf8');
+
+// 3. Clean Player.js
+let player = fs.readFileSync('src/entities/Player.js', 'utf8');
+player = player.replace(/this\.playerBloom.*?;\n/g, "");
+fs.writeFileSync('src/entities/Player.js', player, 'utf8');
+
+console.log('100% clean single aura enforced across entire codebase!');
