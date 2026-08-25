@@ -1969,6 +1969,22 @@
       this.inventoryPopup = new InventoryPopup(this);
       this.touchControls = new TouchControls(this);
       this.registry.set("touchControls", this.touchControls);
+      this.fsBtnBg = this.add.rectangle(w - 85, 38, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
+      this.fsBtnText = this.add.text(w - 85, 38, "\u26F6", {
+        font: "bold 20px Arial",
+        fill: "#00d2d3"
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
+      this.fsBtnBg.on("pointerover", () => {
+        this.fsBtnBg.setFillStyle(53971);
+        this.fsBtnText.setFill("#1e272e");
+      });
+      this.fsBtnBg.on("pointerout", () => {
+        this.fsBtnBg.setFillStyle(1976110);
+        this.fsBtnText.setFill("#00d2d3");
+      });
+      this.fsBtnBg.on("pointerdown", () => {
+        this.toggleFullscreen();
+      });
       this.pauseBtnBg = this.add.rectangle(w - 35, 38, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
       this.pauseBtnText = this.add.text(w - 35, 38, "\u23F8", {
         font: "bold 18px Arial",
@@ -2041,6 +2057,17 @@
       this.input.keyboard.on("keydown-ESC", () => {
         this.triggerPause();
       });
+    }
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((err) => {
+          console.log("Error attempting to enable fullscreen:", err.message);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
     }
     triggerPause() {
       if (!this.registry.get("showUI")) return;

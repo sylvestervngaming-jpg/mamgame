@@ -29,6 +29,29 @@ export default class UIScene extends Phaser.Scene {
         this.touchControls = new TouchControls(this);
         this.registry.set('touchControls', this.touchControls);
 
+                // --- NÚT TOÀN MÀN HÌNH (FULLSCREEN) TRÊN GÓC HUD ---
+        this.fsBtnBg = this.add.rectangle(w - 85, 38, 44, 40, 0x1e272e, 0.85)
+            .setStrokeStyle(2, 0x00d2d3)
+            .setScrollFactor(0).setDepth(2500)
+            .setInteractive({ useHandCursor: true });
+
+        this.fsBtnText = this.add.text(w - 85, 38, '⛶', {
+            font: 'bold 20px Arial',
+            fill: '#00d2d3'
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
+
+        this.fsBtnBg.on('pointerover', () => {
+            this.fsBtnBg.setFillStyle(0x00d2d3);
+            this.fsBtnText.setFill('#1e272e');
+        });
+        this.fsBtnBg.on('pointerout', () => {
+            this.fsBtnBg.setFillStyle(0x1e272e);
+            this.fsBtnText.setFill('#00d2d3');
+        });
+        this.fsBtnBg.on('pointerdown', () => {
+            this.toggleFullscreen();
+        });
+
         // --- NÚT TẠM DỪNG (PAUSE) CẢM ỨNG TRÊN GÓC HUD ---
         this.pauseBtnBg = this.add.rectangle(w - 35, 38, 44, 40, 0x1e272e, 0.85)
             .setStrokeStyle(2, 0x00d2d3)
@@ -130,7 +153,19 @@ export default class UIScene extends Phaser.Scene {
         });
     }
 
-        triggerPause() {
+            toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log('Error attempting to enable fullscreen:', err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    triggerPause() {
         if (!this.registry.get('showUI')) return;
 
         // Nếu đang mở túi đồ thì đóng túi đồ
