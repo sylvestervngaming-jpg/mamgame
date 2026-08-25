@@ -685,9 +685,7 @@ export default class RunnerScene extends Phaser.Scene {
         let groundY = this.getTerrainY(this.player.x);
         let slope = this.getTerrainSlope(this.player.x);
         AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
-        if (this.playerGroundLight) {
-            this.playerGroundLight.setPosition(this.player.x, groundY - 5);
-        }
+        
 
         if (this.isCinematic) return;
         

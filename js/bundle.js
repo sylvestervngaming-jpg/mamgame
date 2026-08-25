@@ -1072,9 +1072,6 @@
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);
       AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
-      if (this.playerGroundLight) {
-        this.playerGroundLight.setPosition(this.player.x, groundY - 5);
-      }
       if (this.isCinematic) return;
       let pX = this.player.x;
       let pY = this.player.y;
@@ -2720,13 +2717,14 @@
       this.setTint(initialColor);
       this.colorChangeListener = (parent, color) => {
         this.setTint(color);
+        if (this.aura) this.aura.setFillStyle(color, 0.28);
       };
       scene.registry.events.on("changedata-playerColor", this.colorChangeListener);
       this.on("destroy", () => {
         scene.registry.events.off("changedata-playerColor", this.colorChangeListener);
       });
       this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0, 0.6).setDepth(9);
-      this.playerBloom = AtmosphereFX.createPlayerBloom(scene, this);
+      this.aura = scene.add.circle(x, y - 25, 42, initialColor, 0.28).setBlendMode("ADD").setDepth(9);
       this.playerState = "idle";
       this.playerTween = null;
       if (!scene.keyW) scene.keyW = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -2766,7 +2764,7 @@
         this.hitbox.body.setVelocityY(-600);
       }
       this.x = this.hitbox.x;
-      if (this.playerBloom) this.playerBloom.update(this.x, this.y - 20);
+      if (this.aura) this.aura.setPosition(this.x, this.y - 25);
       this.y = this.hitbox.y + 20;
       this.shadow.x = this.hitbox.x;
       this.shadow.y = groundY;
