@@ -539,9 +539,9 @@
         tilt: 400
       });
       for (let bi = 0; bi < 6; bi++) {
-        this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
+        this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2).setDepth(-10);
       }
-      let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(2);
+      let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(-5);
       mgGraphics.fillStyle(1382176, 0.92);
       for (let x = -200; x < w * 6; x += Phaser.Math.Between(200, 380)) {
         let width = Phaser.Math.Between(80, 170);
@@ -636,7 +636,7 @@
       for (let x = 0; x <= w * 6; x += 512) {
         if (x === 1536) continue;
         for (let yOffset = 0; yOffset <= 1500; yOffset += 145) {
-          let groundImg = this.add.image(x, h + 322 + yOffset, "toxic_ground").setOrigin(0, 1).setScale(0.5);
+          let groundImg = this.add.image(x, h + 322 + yOffset, "toxic_ground").setOrigin(0, 1).setScale(0.5).setDepth(5);
           groundImg.setCrop(0, 160, 1024, 300);
           groundImg.setMask(groundMask);
           groundImg.setDepth(5);
@@ -683,7 +683,7 @@
       for (let fx = 500; fx < w * 6; fx += 300) {
         if (fx > 1400 && fx < 2100) continue;
         let ty = this.getTerrainY(fx);
-        let flowerContainer = this.add.container(fx, ty);
+        let flowerContainer = this.add.container(fx, ty).setDepth(6);
         let stem = this.add.rectangle(0, 0, 3, 30, 4473907).setOrigin(0.5, 1);
         let bud = this.add.circle(0, -30, 6, 6710869);
         let petal1 = this.add.ellipse(-7, -33, 8, 5, 16746666).setAlpha(0).setAngle(-30);
@@ -714,7 +714,7 @@
       this.physics.add.collider(this.player, this.groundGroup);
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
-      this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0, 0.6);
+      this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0, 0.6).setDepth(9);
       this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
       AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
         g.fillStyle(16777215);
@@ -724,7 +724,7 @@
       this.player.body.setCollideWorldBounds(true);
       let initialColor = this.registry.get("playerColor") || 3066993;
       if (this.aura) this.aura.setFillStyle(initialColor, 0.15);
-      this.playerSprite = this.add.sprite(200, h - 150, "green_circle");
+      this.playerSprite = this.add.sprite(200, h - 150, "green_circle").setDepth(10);
       this.playerSprite.setTint(initialColor);
       this.registry.events.on("changedata-playerColor", (parent, color) => {
         if (this.playerSprite) this.playerSprite.setTint(color);

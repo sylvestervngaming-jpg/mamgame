@@ -71,14 +71,14 @@ export default class RunnerScene extends Phaser.Scene {
         });
 
         for (let bi = 0; bi < 6; bi++) {
-            this.add.image(w * bi, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
+            this.add.image(w * bi, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2).setDepth(-10);
         }
         
         // NÃ¡Â»Ân Ã„â€˜en thÃ¡ÂºÂ³m che lÃ¡ÂºÂ¥p toÃƒÂ n bÃ¡Â»â„¢ thÃ¡ÂºÂ¿ giÃ¡Â»â€ºi ngÃ¡ÂºÂ§m bÃƒÂªn dÃ†Â°Ã¡Â»â€ºi mÃƒÂ n hÃƒÂ¬nh (dÃƒÂ nh cho cÃƒÂ¡i dÃ¡Â»â€˜c sÃƒÂ¢u 1000px)
         // Removed underground rect
 
         // --- TÀN TÍCH NHÀ CỬA & CỘT BÊ TÔNG ĐỔ NÁT Ở XA (MIDGROUND RUINS - PARALLAX 0.38) ---
-        let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(2);
+        let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(-5);
         mgGraphics.fillStyle(0x151720, 0.92);
 
         for (let x = -200; x < w * 6; x += Phaser.Math.Between(200, 380)) {
@@ -205,7 +205,7 @@ export default class RunnerScene extends Phaser.Scene {
             if (x === 1536) continue; // BÃ¡Â»Â qua khÃƒÂºc hÃ¡Â»â€˜ Ã„â€˜Ã¡ÂºÂ§u tiÃƒÂªn
             // LÃ¡ÂºÂ·p theo chiÃ¡Â»Âu dÃ¡Â»Âc Ã„â€˜Ã¡Â»Æ’ trÃ¡ÂºÂ£i texture xuÃ¡Â»â€˜ng vÃ¡Â»Â±c sÃƒÂ¢u, yOffset += 145 Ã„â€˜Ã¡Â»Æ’ khÃƒÂ´ng bÃ¡Â»â€¹ hÃ¡Â»Å¸ sÃ¡Â»Âc ngang
             for (let yOffset = 0; yOffset <= 1500; yOffset += 145) {
-                let groundImg = this.add.image(x, h + 322 + yOffset, 'toxic_ground').setOrigin(0, 1).setScale(0.5);
+                let groundImg = this.add.image(x, h + 322 + yOffset, 'toxic_ground').setOrigin(0, 1).setScale(0.5).setDepth(5);
                 // Crop lÃ¡ÂºÂ¡i giÃ¡Â»â€˜ng bÃ¡ÂºÂ£n cÃ…Â© Ã„â€˜Ã¡Â»Æ’ cÃƒÂ¡i bÃ¡Â»Â mÃ¡ÂºÂ·t Ã„â€˜Ã†Â°Ã¡Â»Âng bÃ¡ÂºÂ±ng phÃ¡ÂºÂ³ng nÃ¡ÂºÂ±m ngay mÃƒÂ©p trÃƒÂªn
                 groundImg.setCrop(0, 160, 1024, 300);
                 groundImg.setMask(groundMask);
@@ -261,7 +261,7 @@ export default class RunnerScene extends Phaser.Scene {
         for (let fx = 500; fx < w * 6; fx += 300) {
             if (fx > 1400 && fx < 2100) continue;
             let ty = this.getTerrainY(fx);
-            let flowerContainer = this.add.container(fx, ty);
+            let flowerContainer = this.add.container(fx, ty).setDepth(6);
             // ThÃƒÂ¢n cÃƒÂ¢y (Ã„â€˜ÃƒÂ¡y tÃ¡ÂºÂ¡i y=0 = mÃ¡ÂºÂ·t Ã„â€˜Ã¡ÂºÂ¥t)
             let stem = this.add.rectangle(0, 0, 3, 30, 0x444433).setOrigin(0.5, 1);
             // NÃ¡Â»Â¥ hoa (ngay trÃƒÂªn Ã„â€˜Ã¡Â»â€°nh thÃƒÂ¢n)
@@ -309,7 +309,7 @@ export default class RunnerScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.wallJumpRight);
 
         // Player Shadow & Aura (Polish)
-        this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0x000000, 0.6);
+        this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0x000000, 0.6).setDepth(9);
         this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
 
         // TÃ¡ÂºÂ¡o texture hÃƒÂ¬nh trÃƒÂ²n xanh lÃƒÂ¡ nÃ¡ÂºÂ¿u chÃ†Â°a cÃƒÂ³
@@ -323,7 +323,7 @@ export default class RunnerScene extends Phaser.Scene {
         // ThÃƒÂªm hÃƒÂ¬nh trÃƒÂ²n xanh lÃƒÂ¡ lÃƒÂ m Sprite tÃ¡ÂºÂ¡m thÃ¡Â»Âi
         let initialColor = this.registry.get('playerColor') || 0x2ecc71;
         if (this.aura) this.aura.setFillStyle(initialColor, 0.15);
-        this.playerSprite = this.add.sprite(200, h - 150, 'green_circle');
+        this.playerSprite = this.add.sprite(200, h - 150, 'green_circle').setDepth(10);
         this.playerSprite.setTint(initialColor);
         this.registry.events.on('changedata-playerColor', (parent, color) => {
             if (this.playerSprite) this.playerSprite.setTint(color);
