@@ -680,6 +680,14 @@ export default class RunnerScene extends Phaser.Scene {
 
         // SÃ¡Â»Â­ dÃ¡Â»Â¥ng Arcade Physics Ã„â€˜Ã¡Â»Æ’ kiÃ¡Â»Æ’m tra Ã„â€˜Ã¡Â»Â©ng trÃƒÂªn Ã„â€˜Ã¡ÂºÂ¥t (hoÃ¡ÂºÂ·c hÃ¡Â»â„¢p)
         let isGrounded = this.player.body.touching.down;
+        let touch = this.registry.get("touchControls");
+        let isTouchLeft = !!(touch && touch.isLeft);
+        let isTouchRight = !!(touch && touch.isRight);
+        let isTouchJump = !!(touch && touch.isJump);
+        if (touch && touch.isJump) { touch.isJump = false; }
+
+        let isMovingLeft = (this.cursors.left && this.cursors.left.isDown) || (this.keyA && this.keyA.isDown) || isTouchLeft;
+        let isMovingRight = (this.cursors.right && this.cursors.right.isDown) || (this.keyD && this.keyD.isDown) || isTouchRight;
 
         let isMoving = false;
         let isJumping = false;

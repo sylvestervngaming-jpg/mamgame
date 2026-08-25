@@ -856,6 +856,15 @@
       let pX = this.player.x;
       let pY = this.player.y;
       let isGrounded = this.player.body.touching.down;
+      let touch = this.registry.get("touchControls");
+      let isTouchLeft = !!(touch && touch.isLeft);
+      let isTouchRight = !!(touch && touch.isRight);
+      let isTouchJump = !!(touch && touch.isJump);
+      if (touch && touch.isJump) {
+        touch.isJump = false;
+      }
+      let isMovingLeft = this.cursors.left && this.cursors.left.isDown || this.keyA && this.keyA.isDown || isTouchLeft;
+      let isMovingRight = this.cursors.right && this.cursors.right.isDown || this.keyD && this.keyD.isDown || isTouchRight;
       let isMoving = false;
       let isJumping = false;
       let isJumpPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey) || Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keyW) || isTouchJump;
@@ -2407,7 +2416,7 @@
       let touch = this.scene.registry.get("touchControls");
       let isTouchLeft = touch && touch.isLeft;
       let isTouchRight = touch && touch.isRight;
-      let isTouchJump2 = touch && touch.isJump;
+      let isTouchJump = touch && touch.isJump;
       let isLeft = cursors && cursors.left && cursors.left.isDown || this.scene.keyA && this.scene.keyA.isDown || isTouchLeft;
       let isRight = cursors && cursors.right && cursors.right.isDown || this.scene.keyD && this.scene.keyD.isDown || isTouchRight;
       if (isLeft) {
@@ -2422,7 +2431,7 @@
       let isW = this.scene.keyW && this.scene.keyW.isDown;
       let isUp = cursors && cursors.up && cursors.up.isDown;
       let isSpace = spaceKey && spaceKey.isDown;
-      let isJumpPressed = isW || isUp || isSpace || isTouchJump2;
+      let isJumpPressed = isW || isUp || isSpace || isTouchJump;
       if (isJumpPressed && isGrounded) {
         this.hitbox.body.setVelocityY(-600);
       }
