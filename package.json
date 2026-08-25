@@ -1,0 +1,44 @@
+{
+    "name": "mam",
+    "version": "1.0.0",
+    "main": "electron.js",
+    "scripts": {
+        "start": "electron .",
+        "package": "npx electron-packager . MamGame --platform=win32 --arch=x64 --out=dist --overwrite",
+        "build:single": "electron-builder --win portable",
+        "build:js": "npx esbuild src/main.js --bundle --outfile=js/bundle.js"
+    },
+    "build": {
+        "appId": "com.mam.game",
+        "productName": "MamGame",
+        "directories": {
+            "output": "dist-single"
+        },
+        "files": [
+            "index.html",
+            "style.css",
+            "electron.js",
+            "package.json",
+            "js/**/*",
+            "assets/**/*"
+        ],
+        "extraResources": [
+            {
+                "from": "assets",
+                "to": "assets",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ],
+        "win": {
+            "target": "portable"
+        }
+    },
+    "devDependencies": {
+        "electron": "^43.4.1",
+        "electron-builder": "^26.15.3",
+        "electron-packager": "^17.1.2",
+        "esbuild": "^0.28.2"
+    }
+}

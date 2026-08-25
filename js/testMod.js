@@ -1,0 +1,1 @@
+export function testMod() { console.log('es6 mod works'); }
