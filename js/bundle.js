@@ -385,54 +385,22 @@
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
       this.registry.set("showSurvival", false);
-      this.bg1 = this.add.image(0, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
-      this.bg2 = this.add.image(w, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2).setFlipX(true);
-      this.bg3 = this.add.image(w * 2, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
-      AssetManager.generateAndSave(this, "map1_mg", w * 6, h + 1500, (mgGraphics) => {
-        mgGraphics.fillStyle(1052693, 1);
-        for (let x = -200; x < w * 6; x += Phaser.Math.Between(200, 400)) {
-          let width = Phaser.Math.Between(60, 200);
-          let height = Phaser.Math.Between(180, 450);
-          mgGraphics.fillRect(x, h - height, width, height + 1500);
-          mgGraphics.beginPath();
-          mgGraphics.moveTo(x, h - height);
-          let segments = Phaser.Math.Between(3, 6);
-          let segW = width / segments;
-          for (let s = 1; s <= segments; s++) {
-            mgGraphics.lineTo(x + s * segW, h - height - Phaser.Math.Between(-15, 30));
-          }
-          mgGraphics.lineTo(x + width, h - height);
-          mgGraphics.fillPath();
-          if (Math.random() > 0.5) {
-            mgGraphics.beginPath();
-            mgGraphics.moveTo(x, h - height / 2);
-            let dropX = x - Phaser.Math.Between(10, 30);
-            mgGraphics.lineTo(dropX, h);
-            mgGraphics.lineTo(dropX, h + 1500);
-            mgGraphics.lineTo(x, h + 1500);
-            mgGraphics.fillPath();
-          }
-          if (Math.random() > 0.5) {
-            mgGraphics.beginPath();
-            mgGraphics.moveTo(x + width, h - height / 3);
-            let dropX = x + width + Phaser.Math.Between(10, 40);
-            mgGraphics.lineTo(dropX, h);
-            mgGraphics.lineTo(dropX, h + 1500);
-            mgGraphics.lineTo(x + width, h + 1500);
-            mgGraphics.fillPath();
-          }
-          if (Math.random() > 0.4) {
-            mgGraphics.lineStyle(3, 526348, 1);
-            mgGraphics.beginPath();
-            let poleX = x + Phaser.Math.Between(10, width - 10);
-            let poleY = h - height - 10;
-            mgGraphics.moveTo(poleX, poleY);
-            mgGraphics.lineTo(poleX + Phaser.Math.Between(-10, 10), poleY - Phaser.Math.Between(30, 80));
-            mgGraphics.strokePath();
-          }
-        }
-      });
-      this.add.image(0, 0, "map1_mg").setOrigin(0, 0).setScrollFactor(0.4);
+      for (let bi = 0; bi < 6; bi++) {
+        this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
+      }
+      let mgGraphics = this.add.graphics().setScrollFactor(0.4);
+      mgGraphics.fillStyle(1052693, 1);
+      for (let x = -200; x < w * 6; x += 300) {
+        let width = 120;
+        let height = 300;
+        mgGraphics.fillRect(x, h - height, width, height + 1500);
+        mgGraphics.beginPath();
+        mgGraphics.moveTo(x, h - height);
+        mgGraphics.lineTo(x + 40, h - height - 20);
+        mgGraphics.lineTo(x + 80, h - height + 10);
+        mgGraphics.lineTo(x + width, h - height);
+        mgGraphics.fillPath();
+      }
       this.add.rectangle(1536, h - 30, 512, 1500, 1703970, 0.95).setOrigin(0, 0);
       this.add.rectangle(1536, h - 45, 512, 40, 3342413, 0.7).setOrigin(0, 0);
       AssetManager.generateAndSave(this, "toxic_lake", 512, 20, (g) => {

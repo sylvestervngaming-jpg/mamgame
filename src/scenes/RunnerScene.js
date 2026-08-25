@@ -59,79 +59,30 @@ export default class RunnerScene extends Phaser.Scene {
         this.scene.bringToTop('UIScene');
         this.registry.set('showSurvival', false);
 
-        // Backgrounds
-        this.bg1 = this.add.image(0, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
-        this.bg2 = this.add.image(w, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2).setFlipX(true);
-        this.bg3 = this.add.image(w*2, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
+        // Backgrounds (Seamless repeating)
+        for (let bi = 0; bi < 6; bi++) {
+            this.add.image(w * bi, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
+        }
         
         // NÃ¡Â»Ân Ã„â€˜en thÃ¡ÂºÂ³m che lÃ¡ÂºÂ¥p toÃƒÂ n bÃ¡Â»â„¢ thÃ¡ÂºÂ¿ giÃ¡Â»â€ºi ngÃ¡ÂºÂ§m bÃƒÂªn dÃ†Â°Ã¡Â»â€ºi mÃƒÂ n hÃƒÂ¬nh (dÃƒÂ nh cho cÃƒÂ¡i dÃ¡Â»â€˜c sÃƒÂ¢u 1000px)
         // Removed underground rect
 
-        // Midground Ruins (HÃ¡ÂºÂ­u cÃ¡ÂºÂ£nh xa vÃ¡Â»Â«a) - Parallax 0.4
-        
-        // --- AUTO-EXPORT MIDGROUND PARALLAX ---
-        AssetManager.generateAndSave(this, 'map1_mg', w * 6, h + 1500, (mgGraphics) => {
-            mgGraphics.fillStyle(0x101015, 1);
-            // Copy logic
+        // Midground Ruins (Hậu cảnh xa vừa) - Direct Graphics (No huge texture)
+        let mgGraphics = this.add.graphics().setScrollFactor(0.4);
+        mgGraphics.fillStyle(0x101015, 1);
 
-        
-        
-        
-        
-        for(let x = -200; x < w * 6; x += Phaser.Math.Between(200, 400)) {
-            let width = Phaser.Math.Between(60, 200);
-            let height = Phaser.Math.Between(180, 450);
-            
-            
+        for(let x = -200; x < w * 6; x += 300) {
+            let width = 120;
+            let height = 300;
             mgGraphics.fillRect(x, h - height, width, height + 1500);
-            
             
             mgGraphics.beginPath();
             mgGraphics.moveTo(x, h - height);
-            let segments = Phaser.Math.Between(3, 6);
-            let segW = width / segments;
-            for(let s = 1; s <= segments; s++) {
-                mgGraphics.lineTo(x + s * segW, h - height - Phaser.Math.Between(-15, 30));
-            }
+            mgGraphics.lineTo(x + 40, h - height - 20);
+            mgGraphics.lineTo(x + 80, h - height + 10);
             mgGraphics.lineTo(x + width, h - height);
             mgGraphics.fillPath();
-
-            
-            if (Math.random() > 0.5) {
-                mgGraphics.beginPath();
-                mgGraphics.moveTo(x, h - height/2);
-                let dropX = x - Phaser.Math.Between(10, 30);
-                mgGraphics.lineTo(dropX, h);
-                mgGraphics.lineTo(dropX, h + 1500);
-                mgGraphics.lineTo(x, h + 1500);
-                mgGraphics.fillPath();
-            }
-            if (Math.random() > 0.5) {
-                mgGraphics.beginPath();
-                mgGraphics.moveTo(x + width, h - height/3);
-                let dropX = x + width + Phaser.Math.Between(10, 40);
-                mgGraphics.lineTo(dropX, h);
-                mgGraphics.lineTo(dropX, h + 1500);
-                mgGraphics.lineTo(x + width, h + 1500);
-                mgGraphics.fillPath();
-            }
-            
-            
-            if (Math.random() > 0.4) {
-                mgGraphics.lineStyle(3, 0x08080c, 1);
-                mgGraphics.beginPath();
-                let poleX = x + Phaser.Math.Between(10, width - 10);
-                let poleY = h - height - 10;
-                mgGraphics.moveTo(poleX, poleY);
-                mgGraphics.lineTo(poleX + Phaser.Math.Between(-10, 10), poleY - Phaser.Math.Between(30, 80));
-                mgGraphics.strokePath();
-            }
         }
-
-        
-        
-        });
-        this.add.image(0, 0, 'map1_mg').setOrigin(0, 0).setScrollFactor(0.4);
 
         // --- NƯỚC ĐỘC ---
 // HÃ¡Â»â€˜ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c Ã¡Â»Å¸ giÃ¡Â»Â¯a (1536 -> 2048)
