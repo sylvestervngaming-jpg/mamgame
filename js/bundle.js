@@ -1654,6 +1654,8 @@
       super("MenuScene");
     }
     create() {
+      this.registry.set("showUI", false);
+      this.registry.set("showSurvival", false);
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.add.text(w / 2, h / 3, "M\u1EA6M: H\xC0NH TR\xCCNH T\xCCM N\u1EAENG", { font: "bold 60px Arial", fill: "#66ff66" }).setOrigin(0.5);
@@ -2204,9 +2206,21 @@
     }
     updateData(parent, key, data) {
       if (key === "showUI") {
-        this.uiContainer.setVisible(!!data);
-        if (this.bagBtnBg) this.bagBtnBg.setVisible(!!data);
-        if (this.bagBtnText) this.bagBtnText.setVisible(!!data);
+        let isVisible = !!data;
+        this.uiContainer.setVisible(isVisible);
+        if (this.bagBtnBg) this.bagBtnBg.setVisible(isVisible);
+        if (this.bagBtnText) this.bagBtnText.setVisible(isVisible);
+        if (this.pauseBtnBg) this.pauseBtnBg.setVisible(isVisible);
+        if (this.pauseBtnText) this.pauseBtnText.setVisible(isVisible);
+        if (this.fsBtnBg) this.fsBtnBg.setVisible(isVisible);
+        if (this.fsBtnText) this.fsBtnText.setVisible(isVisible);
+        if (this.touchControls) {
+          let isTouch = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+          this.touchControls.setVisible(isVisible && isTouch);
+        }
+        if (!isVisible && this.inventoryPopup && this.inventoryPopup.isOpen) {
+          this.inventoryPopup.close();
+        }
       }
       if (key === "showSurvival") {
         this.survivalContainer.setVisible(!!data);
@@ -2259,6 +2273,8 @@
       super({ key: "MapSelectionScene" });
     }
     create() {
+      this.registry.set("showUI", false);
+      this.registry.set("showSurvival", false);
       this.cameras.main.fadeIn(1e3, 0, 0, 0);
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;

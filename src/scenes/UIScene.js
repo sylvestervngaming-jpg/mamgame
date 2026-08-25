@@ -251,9 +251,21 @@ export default class UIScene extends Phaser.Scene {
 
     updateData(parent, key, data) {
         if (key === 'showUI') {
-            this.uiContainer.setVisible(!!data);
-            if (this.bagBtnBg) this.bagBtnBg.setVisible(!!data);
-            if (this.bagBtnText) this.bagBtnText.setVisible(!!data);
+            let isVisible = !!data;
+            this.uiContainer.setVisible(isVisible);
+            if (this.bagBtnBg) this.bagBtnBg.setVisible(isVisible);
+            if (this.bagBtnText) this.bagBtnText.setVisible(isVisible);
+            if (this.pauseBtnBg) this.pauseBtnBg.setVisible(isVisible);
+            if (this.pauseBtnText) this.pauseBtnText.setVisible(isVisible);
+            if (this.fsBtnBg) this.fsBtnBg.setVisible(isVisible);
+            if (this.fsBtnText) this.fsBtnText.setVisible(isVisible);
+            if (this.touchControls) {
+                let isTouch = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                this.touchControls.setVisible(isVisible && isTouch);
+            }
+            if (!isVisible && this.inventoryPopup && this.inventoryPopup.isOpen) {
+                this.inventoryPopup.close();
+            }
         }
         if (key === 'showSurvival') {
             this.survivalContainer.setVisible(!!data);

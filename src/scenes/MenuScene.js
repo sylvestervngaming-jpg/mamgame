@@ -2,6 +2,8 @@ export default class MenuScene extends Phaser.Scene {
     constructor() { super('MenuScene'); }
     
     create() {
+        this.registry.set('showUI', false);
+        this.registry.set('showSurvival', false);
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
         

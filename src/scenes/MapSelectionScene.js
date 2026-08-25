@@ -7,6 +7,8 @@ export default class MapSelectionScene extends Phaser.Scene {
 
     
     create() {
+        this.registry.set('showUI', false);
+        this.registry.set('showSurvival', false);
         this.cameras.main.fadeIn(1000, 0, 0, 0);
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
