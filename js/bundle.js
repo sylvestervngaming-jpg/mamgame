@@ -1590,6 +1590,12 @@
       this.add.text(w / 2, h / 3, "M\u1EA6M: H\xC0NH TR\xCCNH T\xCCM N\u1EAENG", { font: "bold 60px Arial", fill: "#66ff66" }).setOrigin(0.5);
       let startBtn = this.add.text(w / 2, h / 2 - 40, "B\u1EAET \u0110\u1EA6U T\u1EEA M\xC0N 1", { font: "bold 40px Arial", fill: "#fff" }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       startBtn.on("pointerdown", () => {
+        try {
+          if (!this.scale.isFullscreen && this.scale.startFullscreen) {
+            this.scale.startFullscreen();
+          }
+        } catch (e) {
+        }
         this.registry.set("health", 100);
         this.registry.set("water", 50);
         this.registry.set("sun", 50);
@@ -2059,13 +2065,19 @@
       });
     }
     toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch((err) => {
-          console.log("Error attempting to enable fullscreen:", err.message);
-        });
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
+      try {
+        if (this.scale.isFullscreen) {
+          this.scale.stopFullscreen();
+        } else {
+          this.scale.startFullscreen();
+        }
+      } catch (e) {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {
+          });
+        } else {
+          document.exitFullscreen().catch(() => {
+          });
         }
       }
     }

@@ -9,6 +9,11 @@ export default class MenuScene extends Phaser.Scene {
         
         let startBtn = this.add.text(w/2, h/2 - 40, 'BẮT ĐẦU TỪ MÀN 1', { font: 'bold 40px Arial', fill: '#fff' }).setOrigin(0.5).setInteractive({ useHandCursor: true });
         startBtn.on('pointerdown', () => {
+            try {
+                if (!this.scale.isFullscreen && this.scale.startFullscreen) {
+                    this.scale.startFullscreen();
+                }
+            } catch (e) {}
             this.registry.set('health', 100);
             this.registry.set('water', 50);
             this.registry.set('sun', 50);

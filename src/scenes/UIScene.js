@@ -154,13 +154,17 @@ export default class UIScene extends Phaser.Scene {
     }
 
             toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.log('Error attempting to enable fullscreen:', err.message);
-            });
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+        try {
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+            } else {
+                this.scale.startFullscreen();
+            }
+        } catch (e) {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
             }
         }
     }
