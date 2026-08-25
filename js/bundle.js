@@ -827,6 +827,8 @@
         g.fillStyle(8913066, 0.4);
         g.fillRect(0, 0, 3e3, 18);
       });
+      let elG = this.add.image(0, -100, "end_lake_surface").setOrigin(0, 0);
+      endLake.add([el1, el2, elG]);
       this.add.particles(0, 0, "smoke", {
         x: { min: 0, max: w * 6 },
         y: { min: 0, max: h },
