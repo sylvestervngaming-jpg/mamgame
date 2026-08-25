@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="landscape">
+    <meta name="x5-orientation" content="landscape">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <link rel="manifest" href="manifest.json">
     <title>Mầm - Hành Trình Tìm Nắng</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -15,6 +20,38 @@
         <div class="rotate-icon">📱 ➔ 🔄</div>
         <h2>Vui lòng xoay ngang điện thoại</h2>
         <p>Để có trải nghiệm phiêu lưu tốt nhất cùng Mầm!</p>
+        <button id="btn-lock-landscape">🔄 BẬT TOÀN MÀN HÌNH NGANG</button>
     </div>
+
+    <script>
+        function triggerLandscapeLock() {
+            const docEl = document.documentElement;
+            const requestFs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            if (requestFs && !document.fullscreenElement) {
+                requestFs.call(docEl).catch(function() {});
+            }
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(function() {});
+            } else if (screen.lockOrientation) {
+                screen.lockOrientation('landscape');
+            } else if (screen.mozLockOrientation) {
+                screen.mozLockOrientation('landscape');
+            } else if (screen.msLockOrientation) {
+                screen.msLockOrientation('landscape');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('btn-lock-landscape');
+            if (btn) {
+                btn.addEventListener('click', triggerLandscapeLock);
+                btn.addEventListener('touchstart', triggerLandscapeLock);
+            }
+            // Auto lock on first touch anywhere on screen
+            document.body.addEventListener('touchstart', function() {
+                triggerLandscapeLock();
+            }, { passive: true, once: false });
+        });
+    </script>
 </body>
 </html>

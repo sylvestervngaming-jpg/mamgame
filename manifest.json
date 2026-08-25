@@ -1,0 +1,16 @@
+{
+  "name": "Mầm - Hành Trình Tìm Nắng",
+  "short_name": "Mầm Game",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#00d2d3",
+  "icons": [
+    {
+      "src": "assets/sprites/sprout.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
