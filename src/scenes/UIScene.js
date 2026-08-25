@@ -1,3 +1,4 @@
+import AtmosphereFX from '../utils/AtmosphereFX.js';
 import TouchControls from '../ui/TouchControls.js';
 import InventoryPopup from '../ui/InventoryPopup.js';
 
@@ -114,6 +115,7 @@ export default class UIScene extends Phaser.Scene {
 
         // --- HỆ THỐNG TOAST THÔNG BÁO NHẶT VẬT PHẨM ---
         this.toastContainer = this.add.container(0, 0).setDepth(2600).setScrollFactor(0);
+        AtmosphereFX.createCinematicVignette(this);
         this.registry.events.on('item-collected', (item) => {
             this.showPickupToast(item);
         });

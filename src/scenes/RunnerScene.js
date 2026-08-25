@@ -1,3 +1,4 @@
+import AtmosphereFX from '../utils/AtmosphereFX.js';
 import CollectibleItem from '../entities/CollectibleItem.js';
 import AssetManager from '../utils/AssetManager.js';
 export default class RunnerScene extends Phaser.Scene {
@@ -60,6 +61,15 @@ export default class RunnerScene extends Phaser.Scene {
         this.registry.set('showSurvival', false);
 
         // Backgrounds (Seamless repeating)
+        // --- ÁNH SÁNG ĐIỆN ẢNH (GOD RAYS) ---
+        AtmosphereFX.createGodRays(this, {
+            startX: 0,
+            endX: w * 6,
+            color: 0xffeaa7,
+            baseAlpha: 0.14,
+            tilt: 400
+        });
+
         for (let bi = 0; bi < 6; bi++) {
             this.add.image(w * bi, 0, 'war_bg').setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
         }
@@ -271,8 +281,7 @@ export default class RunnerScene extends Phaser.Scene {
 
         // Player Shadow & Aura (Polish)
         this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0x000000, 0.6);
-        this.aura = this.add.circle(200, h - 150, 70, 0x88ff88, 0.15);
-        this.aura.setBlendMode('ADD');
+        this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
 
         // TÃ¡ÂºÂ¡o texture hÃƒÂ¬nh trÃƒÂ²n xanh lÃƒÂ¡ nÃ¡ÂºÂ¿u chÃ†Â°a cÃƒÂ³
         AssetManager.generateAndSave(this, 'green_circle', 50, 50, (g) => {
@@ -634,8 +643,9 @@ export default class RunnerScene extends Phaser.Scene {
         // Sync sprite to invisible physics body LUÃƒâ€N LUÃƒâ€N CHÃ¡ÂºÂ Y
         this.playerSprite.x = this.player.x;
         this.playerSprite.y = this.player.y + 40;
-        this.aura.x = this.player.x;
-        this.aura.y = this.player.y;
+        if (this.playerBloom) {
+            this.playerBloom.update(this.player.x, this.player.y);
+        }
 
         // BÃƒÂ³ng Ã„â€˜Ã¡Â»â€¢ (Shadow) phÃ¡ÂºÂ£i nÃ¡ÂºÂ±m vÃ„Â©nh viÃ¡Â»â€¦n trÃƒÂªn mÃ¡ÂºÂ·t Ã„â€˜Ã¡ÂºÂ¥t, vÃƒÂ  nhÃ¡ÂºÂ¡t dÃ¡ÂºÂ§n khi nhÃ¡ÂºÂ£y cao
         let groundY = this.getTerrainY(this.player.x);

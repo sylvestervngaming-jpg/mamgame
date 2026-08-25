@@ -1,3 +1,4 @@
+import AtmosphereFX from '../utils/AtmosphereFX.js';
 import CollectibleItem from '../entities/CollectibleItem.js';
 import AssetManager from '../utils/AssetManager.js';
 import Player from '../entities/Player.js';
@@ -19,6 +20,7 @@ export default class Map4Scene extends Phaser.Scene {
         const mapWidth = 3200;
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+        AtmosphereFX.createGodRays(this, { startX: 0, endX: 5000, color: 0xfdcb6e, baseAlpha: 0.18, tilt: 420 });
         this.scene.launch('UIScene');
         this.scene.bringToTop('UIScene');
         this.registry.set('showUI', true);

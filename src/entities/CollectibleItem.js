@@ -106,6 +106,18 @@ export default class CollectibleItem extends Phaser.Physics.Arcade.Sprite {
 
         this.setOrigin(0.5, 0.5);
         this.setDepth(12);
+        // Hào quang tỏa sáng của vật phẩm
+        this.glowRing = scene.add.circle(x, y, 22, 0xffffff, 0.25).setBlendMode('ADD').setDepth(11);
+        scene.tweens.add({
+            targets: this.glowRing,
+            scaleX: 1.3,
+            scaleY: 1.3,
+            alpha: 0.45,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
 
         // Hiệu ứng bay lơ lửng nhấp nhô nhẹ
         scene.tweens.add({
@@ -159,7 +171,8 @@ export default class CollectibleItem extends Phaser.Physics.Arcade.Sprite {
             duration: 350,
             ease: 'Back.easeOut',
             onComplete: () => {
-                this.destroy();
+                if (this.glowRing) this.glowRing.destroy();
+        this.destroy();
             }
         });
     }

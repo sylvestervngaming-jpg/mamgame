@@ -1,3 +1,4 @@
+import AtmosphereFX from '../utils/AtmosphereFX.js';
 import AssetManager from '../utils/AssetManager.js';
 /**
  * Represents the main character in the game.
@@ -49,6 +50,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         
         // --- BÓNG (SHADOW) ---
         this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0x000000, 0.6).setDepth(9);
+        this.playerBloom = AtmosphereFX.createPlayerBloom(scene, this);
         
         // --- TRẠNG THÁI (STATE) ---
         this.playerState = 'idle';
@@ -101,6 +103,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
         // Đồng bộ vị trí Visual với Hitbox (Visual nằm trên tâm Hitbox 20px)
         this.x = this.hitbox.x;
+        if (this.playerBloom) this.playerBloom.update(this.x, this.y - 20);
         this.y = this.hitbox.y + 20;
 
         // Đồng bộ Bóng

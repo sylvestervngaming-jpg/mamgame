@@ -191,6 +191,124 @@
     }
   };
 
+  // src/utils/AtmosphereFX.js
+  var AtmosphereFX = class {
+    /**
+     * Tạo các vệt sáng chiếu xuyên không gian (God Rays / Volumetric Light Beams)
+     * @param {Phaser.Scene} scene 
+     * @param {Object} config { x, y, count, width, height, angle, color, alpha }
+     */
+    static createGodRays(scene, config2 = {}) {
+      const {
+        startX = 0,
+        endX = scene.cameras.main.width * 6,
+        topY = 0,
+        bottomY = scene.cameras.main.height + 600,
+        rayCount = 8,
+        color = 16775904,
+        baseAlpha = 0.12,
+        tilt = 350
+      } = config2;
+      let container = scene.add.container(0, 0).setDepth(8).setScrollFactor(0.7);
+      for (let i = 0; i < rayCount; i++) {
+        let rx = Phaser.Math.Between(startX, endX);
+        let topWidth = Phaser.Math.Between(60, 160);
+        let bottomWidth = topWidth * Phaser.Math.FloatBetween(2, 3.5);
+        let g = scene.add.graphics();
+        g.fillStyle(color, baseAlpha * Phaser.Math.FloatBetween(0.7, 1.3));
+        g.beginPath();
+        g.moveTo(rx, topY);
+        g.lineTo(rx + topWidth, topY);
+        g.lineTo(rx + topWidth + tilt + bottomWidth, bottomY);
+        g.lineTo(rx + tilt, bottomY);
+        g.closePath();
+        g.fillPath();
+        g.setBlendMode("ADD");
+        container.add(g);
+        scene.tweens.add({
+          targets: g,
+          alpha: { from: g.alpha * 0.5, to: g.alpha * 1.5 },
+          x: { from: -15, to: 15 },
+          duration: Phaser.Math.Between(3e3, 6e3),
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+          delay: i * 400
+        });
+      }
+      let dustEmitter = scene.add.particles(0, 0, "firefly", {
+        x: { min: startX, max: endX },
+        y: { min: topY, max: bottomY },
+        speedX: { min: -15, max: 25 },
+        speedY: { min: -10, max: -35 },
+        scale: { start: 0.8, end: 0 },
+        alpha: { start: 0.6, end: 0 },
+        lifespan: 4500,
+        blendMode: "ADD",
+        frequency: 180,
+        tint: color
+      }).setDepth(9).setScrollFactor(0.8);
+      return { container, dustEmitter };
+    }
+    /**
+     * Tạo vầng hào quang phát sáng 3 lớp (3-Tier Dynamic Bloom) cho nhân vật Mầm
+     * @param {Phaser.Scene} scene 
+     * @param {Phaser.GameObjects.Sprite} targetSprite 
+     */
+    static createPlayerBloom(scene, targetSprite) {
+      let initialColor = scene.registry.get("playerColor") || 3066993;
+      let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(targetSprite.depth - 1);
+      let coreLight = scene.add.circle(0, -25, 36, initialColor, 0.45).setBlendMode("ADD");
+      let midAura = scene.add.circle(0, -25, 80, initialColor, 0.2).setBlendMode("ADD");
+      let outerCorona = scene.add.circle(0, -25, 140, initialColor, 0.08).setBlendMode("ADD");
+      container.add([outerCorona, midAura, coreLight]);
+      scene.tweens.add({
+        targets: [midAura, outerCorona],
+        scaleX: 1.15,
+        scaleY: 1.15,
+        duration: 1600,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut"
+      });
+      let colorListener = (parent, color) => {
+        coreLight.setFillStyle(color, 0.45);
+        midAura.setFillStyle(color, 0.2);
+        outerCorona.setFillStyle(color, 0.08);
+      };
+      scene.registry.events.on("changedata-playerColor", colorListener);
+      return {
+        container,
+        update: (x, y) => {
+          container.setPosition(x, y);
+        },
+        destroy: () => {
+          scene.registry.events.off("changedata-playerColor", colorListener);
+          container.destroy();
+        }
+      };
+    }
+    /**
+     * Tạo viền tối điện ảnh (Cinematic Vignette) cho màn hình
+     * @param {Phaser.Scene} scene 
+     */
+    static createCinematicVignette(scene) {
+      const w = scene.cameras.main.width;
+      const h = scene.cameras.main.height;
+      let g = scene.add.graphics().setScrollFactor(0).setDepth(2450);
+      let maxRadius = Math.sqrt(w * w + h * h) / 2;
+      let ringCount = 12;
+      for (let i = ringCount; i >= 0; i--) {
+        let progress = i / ringCount;
+        let r = maxRadius * (0.6 + progress * 0.4);
+        let alpha = Math.pow(progress, 2.2) * 0.55;
+        g.lineStyle(maxRadius * 0.08, 329745, alpha);
+        g.strokeCircle(w / 2, h / 2, r);
+      }
+      return g;
+    }
+  };
+
   // src/entities/CollectibleItem.js
   var ITEM_DEFS = {
     seed: {
@@ -287,6 +405,17 @@
       this.isCollected = false;
       this.setOrigin(0.5, 0.5);
       this.setDepth(12);
+      this.glowRing = scene.add.circle(x, y, 22, 16777215, 0.25).setBlendMode("ADD").setDepth(11);
+      scene.tweens.add({
+        targets: this.glowRing,
+        scaleX: 1.3,
+        scaleY: 1.3,
+        alpha: 0.45,
+        duration: 1e3,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut"
+      });
       scene.tweens.add({
         targets: this,
         y: y - 8,
@@ -327,6 +456,7 @@
         duration: 350,
         ease: "Back.easeOut",
         onComplete: () => {
+          if (this.glowRing) this.glowRing.destroy();
           this.destroy();
         }
       });
@@ -385,6 +515,13 @@
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
       this.registry.set("showSurvival", false);
+      AtmosphereFX.createGodRays(this, {
+        startX: 0,
+        endX: w * 6,
+        color: 16771751,
+        baseAlpha: 0.14,
+        tilt: 400
+      });
       for (let bi = 0; bi < 6; bi++) {
         this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
       }
@@ -540,8 +677,7 @@
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
       this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0, 0.6);
-      this.aura = this.add.circle(200, h - 150, 70, 8978312, 0.15);
-      this.aura.setBlendMode("ADD");
+      this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
       AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
         g.fillStyle(16777215);
         g.fillCircle(25, 25, 25);
@@ -830,8 +966,9 @@
     update() {
       this.playerSprite.x = this.player.x;
       this.playerSprite.y = this.player.y + 40;
-      this.aura.x = this.player.x;
-      this.aura.y = this.player.y;
+      if (this.playerBloom) {
+        this.playerBloom.update(this.player.x, this.player.y);
+      }
       let groundY = this.getTerrainY(this.player.x);
       this.shadow.x = this.player.x;
       this.shadow.y = groundY;
@@ -2099,6 +2236,7 @@
         }
       });
       this.toastContainer = this.add.container(0, 0).setDepth(2600).setScrollFactor(0);
+      AtmosphereFX.createCinematicVignette(this);
       this.registry.events.on("item-collected", (item) => {
         this.showPickupToast(item);
       });
@@ -2489,6 +2627,7 @@
         scene.registry.events.off("changedata-playerColor", this.colorChangeListener);
       });
       this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0, 0.6).setDepth(9);
+      this.playerBloom = AtmosphereFX.createPlayerBloom(scene, this);
       this.playerState = "idle";
       this.playerTween = null;
       if (!scene.keyW) scene.keyW = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -2528,6 +2667,7 @@
         this.hitbox.body.setVelocityY(-600);
       }
       this.x = this.hitbox.x;
+      if (this.playerBloom) this.playerBloom.update(this.x, this.y - 20);
       this.y = this.hitbox.y + 20;
       this.shadow.x = this.hitbox.x;
       this.shadow.y = groundY;
@@ -2674,6 +2814,7 @@
     }
     create() {
       this.cameras.main.fadeIn(1e3, 0, 0, 0);
+      AtmosphereFX.createGodRays(this, { startX: 0, endX: w * 6, color: 5631940, baseAlpha: 0.12, tilt: 350 });
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.mapW = w * 4;
@@ -2986,6 +3127,7 @@
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.cameras.main.fadeIn(1e3, 0, 0, 0);
+      AtmosphereFX.createGodRays(this, { startX: 0, endX: 4e3, color: 8514796, baseAlpha: 0.15, tilt: 250 });
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
       this.registry.set("showUI", true);
@@ -3195,6 +3337,7 @@
       const h = this.cameras.main.height;
       const mapWidth = 3200;
       this.cameras.main.fadeIn(1e3, 0, 0, 0);
+      AtmosphereFX.createGodRays(this, { startX: 0, endX: 5e3, color: 16632686, baseAlpha: 0.18, tilt: 420 });
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
       this.registry.set("showUI", true);
