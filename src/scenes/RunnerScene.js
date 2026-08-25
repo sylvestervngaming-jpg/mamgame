@@ -220,7 +220,7 @@ export default class RunnerScene extends Phaser.Scene {
                 groundImg.setCrop(0, 160, 1024, 300);
                 groundImg.setMask(groundMask);
                 groundImg.setDepth(5);
-                if ((x / 512) % 2 !== 0) groundImg.setFlipX(true);
+                // groundImg.setFlipX(true);
             }
         }
         
@@ -627,7 +627,7 @@ export default class RunnerScene extends Phaser.Scene {
             }
         }
         });
-        this.add.image(0, 0, 'map1_fg').setOrigin(0, 0).setScrollFactor(1.3).setDepth(100);
+        // this.add.image(0, 0, 'map1_fg').setOrigin(0, 0).setScrollFactor(1.3).setDepth(100);
 
         
         // BÃ¡Â»Æ’ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c khÃ¡Â»â€¢ng lÃ¡Â»â€œ Ã¡Â»Å¸ Ã„â€˜ÃƒÂ¡y vÃ¡Â»Â±c (bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u tÃ¡Â»Â« x=7250, nÃ†Â¡i dÃ¡Â»â€˜c chÃ¡ÂºÂ¡m mÃ¡ÂºÂ·t nÃ†Â°Ã¡Â»â€ºc)

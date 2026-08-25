@@ -497,7 +497,6 @@
           groundImg.setCrop(0, 160, 1024, 300);
           groundImg.setMask(groundMask);
           groundImg.setDepth(5);
-          if (x / 512 % 2 !== 0) groundImg.setFlipX(true);
         }
       }
       this.borderGraphics = this.add.graphics();
@@ -819,7 +818,6 @@
           }
         }
       });
-      this.add.image(0, 0, "map1_fg").setOrigin(0, 0).setScrollFactor(1.3).setDepth(100);
       this.toxicWater = this.add.rectangle(7250, h + 800, 2e3, 1500, 0, 0).setOrigin(0, 0);
       this.physics.add.existing(this.toxicWater, true);
       let endLake = this.add.container(6500, h + 800).setDepth(3);
