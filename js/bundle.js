@@ -127,8 +127,8 @@
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.videoPlaceholder = this.add.rectangle(w / 2, h / 2 - 50, 1e3, 500, 3355443);
-      this.videoText = this.add.text(w / 2, h / 2 - 50, "[ VIDEO CLIP ]\nC\xE1\xBA\xA3nh bom \xC4\u2018\xE1\xBA\xA1n -> M\xE1\xBA\xA7m m\xE1\xBB\x8Dc l\xC3\xAAn -> N\xC6\xB0\xE1\xBB\u203Ac \xC3\xB4 nhi\xE1\xBB\u2026m", { font: "32px Arial", fill: "#ffffff", align: "center" }).setOrigin(0.5);
-      this.skipBtn = this.add.text(w / 2, h - 100, ">> B\xE1\xBB\x8F qua / Ho\xC3\xA0n th\xC3\xA0nh Video", { font: "24px Arial", fill: "#ffff00", backgroundColor: "#000" }).setPadding(10).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => {
+      this.videoText = this.add.text(w / 2, h / 2 - 50, "[ VIDEO CLIP ]\nC\u1EA3nh bom \u0111\u1EA1n -> M\u1EA7m m\u1ECDc l\xEAn -> N\u01B0\u1EDBc \xF4 nhi\u1EC5m", { font: '32px "Segoe UI", Arial', fill: "#ffffff", align: "center" }).setOrigin(0.5);
+      this.skipBtn = this.add.text(w / 2, h - 100, ">> B\u1ECF qua / Ho\xE0n th\xE0nh Video", { font: '24px "Segoe UI", Arial', fill: "#ffff00", backgroundColor: "#000" }).setPadding(10).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => {
         this.videoPlaceholder.setVisible(false);
         this.videoText.setVisible(false);
         this.skipBtn.setVisible(false);
@@ -138,9 +138,9 @@
     showChoice() {
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
-      this.add.text(w / 2, h / 2 - 100, "B\xE1\xBA\xA1n c\xC3\xB3 mu\xE1\xBB\u2018n \xE1\xBB\u0178 l\xE1\xBA\xA1i?", { font: "40px Arial", fill: "#ffffff" }).setOrigin(0.5);
-      this.add.text(w / 2 - 200, h / 2 + 50, "[ X ] R\xE1\xBB\x9Di \xC4\u2018i", { font: "32px Arial", fill: "#ff4444" }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.scene.start("MapScene"));
-      this.add.text(w / 2 + 200, h / 2 + 50, "[ V ] \xE1\xBB\u017E l\xE1\xBA\xA1i", { font: "32px Arial", fill: "#44ff44" }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.scene.start("GameOverScene", { reason: "M\xE1\xBA\xA7m b\xE1\xBB\u2039 nhi\xE1\xBB\u2026m \xC4\u2018\xE1\xBB\u2122c ch\xE1\xBA\xBFt ngay t\xE1\xBB\xAB \xC4\u2018\xE1\xBA\xA7u." }));
+      this.add.text(w / 2, h / 2 - 100, "B\u1EA1n c\xF3 mu\u1ED1n \u1EDF l\u1EA1i?", { font: '40px "Segoe UI", Arial', fill: "#ffffff" }).setOrigin(0.5);
+      this.add.text(w / 2 - 200, h / 2 + 50, "[ X ] R\u1EDDi \u0111i", { font: '32px "Segoe UI", Arial', fill: "#ff4444" }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.scene.start("MapScene"));
+      this.add.text(w / 2 + 200, h / 2 + 50, "[ V ] \u1EDE l\u1EA1i", { font: '32px "Segoe UI", Arial', fill: "#44ff44" }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.scene.start("GameOverScene", { reason: "M\u1EA7m b\u1ECB nhi\u1EC5m \u0111\u1ED9c ch\u1EBFt ngay t\u1EEB \u0111\u1EA7u." }));
     }
   };
 
@@ -1609,7 +1609,7 @@
       if (this.nextScene === "SurvivalScene") {
         fullText = "Ng\xC6\xB0\xC6\xA1i c\xC3\xB3 h\xC3\xACnh h\xC3\xA0i k\xE1\xBB\xB3 l\xE1\xBA\xA1 qu\xC3\xA1... H\xC3\xA3y \xE1\xBB\u0178 l\xE1\xBA\xA1i \xC4\u2018\xC3\xA2y, nh\xC6\xB0ng ng\xC6\xB0\xC6\xA1i ph\xE1\xBA\xA3i g\xE1\xBB\x8Dt \xC4\u2018\xE1\xBA\xBDo b\xE1\xBA\xA3n th\xC3\xA2n \xC4\u2018\xE1\xBB\u0192 tr\xE1\xBB\u0178 n\xC3\xAAn gi\xE1\xBB\u2018ng ch\xC3\xBAng ta!";
         choices = [
-          { text: "\xC4\x90\xE1\xBB\u201Cng \xC3\xBD (L\xE1\xBB\xB1a ch\xE1\xBB\x8Dn sai)", action: () => this.goto("GameOverScene", { reason: "M\xE1\xBA\xA7m ch\xE1\xBA\xA5p nh\xE1\xBA\xADn bi\xE1\xBA\xBFn ch\xE1\xBA\xA5t v\xC3\xA0 \xC4\u2018\xC3\xA1nh m\xE1\xBA\xA5t ch\xC3\xADnh m\xC3\xACnh." }) },
+          { text: "\xC4\x90\xE1\xBB\u201Cng \xC3\xBD (L\xE1\xBB\xB1a ch\xE1\xBB\x8Dn sai)", action: () => this.goto("GameOverScene", { reason: "M\u1EA7m ch\u1EA5p nh\u1EADn bi\u1EBFn ch\u1EA5t v\xE0 \u0111\xE1nh m\u1EA5t ch\xEDnh m\xECnh." }) },
           { text: "T\xE1\xBB\xAB ch\xE1\xBB\u2018i", action: () => this.goto("SurvivalScene") }
         ];
       } else {

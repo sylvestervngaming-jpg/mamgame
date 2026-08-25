@@ -4,10 +4,7 @@ export default class IntroScene extends Phaser.Scene {
     }
 
     create() {
-        // Táº¯t UI trong cÃ¡c mÃ n Cutscene
         this.registry.set('showUI', false);
-
-        // Reset stats khi báº¯t Ä‘áº§u láº¡i vÃ²ng láº·p má»›i
         this.registry.set('health', 100);
         this.registry.set('water', 50);
         this.registry.set('sun', 50);
@@ -16,12 +13,10 @@ export default class IntroScene extends Phaser.Scene {
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
 
-        // Khung video Cutscene giáº£ láº­p
         this.videoPlaceholder = this.add.rectangle(w/2, h/2 - 50, 1000, 500, 0x333333);
-        this.videoText = this.add.text(w/2, h/2 - 50, '[ VIDEO CLIP ]\nCáº£nh bom Ä‘áº¡n -> Máº§m má»c lÃªn -> NÆ°á»›c Ã´ nhiá»…m', { font: '32px Arial', fill: '#ffffff', align: 'center' }).setOrigin(0.5);
+        this.videoText = this.add.text(w/2, h/2 - 50, '[ VIDEO CLIP ]\nCảnh bom đạn -> Mầm mọc lên -> Nước ô nhiễm', { font: '32px "Segoe UI", Arial', fill: '#ffffff', align: 'center' }).setOrigin(0.5);
 
-        // NÃºt Skip video / Giáº£ láº­p video Ä‘Ã£ cháº¡y xong
-        this.skipBtn = this.add.text(w/2, h - 100, '>> Bá» qua / HoÃ n thÃ nh Video', { font: '24px Arial', fill: '#ffff00', backgroundColor: '#000' })
+        this.skipBtn = this.add.text(w/2, h - 100, '>> Bỏ qua / Hoàn thành Video', { font: '24px "Segoe UI", Arial', fill: '#ffff00', backgroundColor: '#000' })
             .setPadding(10).setOrigin(0.5).setInteractive({ useHandCursor: true })
             .on('pointerdown', () => {
                 this.videoPlaceholder.setVisible(false);
@@ -35,16 +30,14 @@ export default class IntroScene extends Phaser.Scene {
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
 
-        this.add.text(w/2, h/2 - 100, 'Báº¡n cÃ³ muá»‘n á»Ÿ láº¡i?', { font: '40px Arial', fill: '#ffffff' }).setOrigin(0.5);
+        this.add.text(w/2, h/2 - 100, 'Bạn có muốn ở lại?', { font: '40px "Segoe UI", Arial', fill: '#ffffff' }).setOrigin(0.5);
 
-        // [ X ] Rá»i Ä‘i
-        this.add.text(w/2 - 200, h/2 + 50, '[ X ] Rá»i Ä‘i', { font: '32px Arial', fill: '#ff4444' })
+        this.add.text(w/2 - 200, h/2 + 50, '[ X ] Rời đi', { font: '32px "Segoe UI", Arial', fill: '#ff4444' })
             .setOrigin(0.5).setInteractive({ useHandCursor: true })
             .on('pointerdown', () => this.scene.start('MapScene'));
 
-        // [ V ] á»ž láº¡i
-        this.add.text(w/2 + 200, h/2 + 50, '[ V ] á»ž láº¡i', { font: '32px Arial', fill: '#44ff44' })
+        this.add.text(w/2 + 200, h/2 + 50, '[ V ] Ở lại', { font: '32px "Segoe UI", Arial', fill: '#44ff44' })
             .setOrigin(0.5).setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => this.scene.start('GameOverScene', { reason: 'Máº§m bá»‹ nhiá»…m Ä‘á»™c cháº¿t ngay tá»« Ä‘áº§u.' }));
+            .on('pointerdown', () => this.scene.start('GameOverScene', { reason: 'Mầm bị nhiễm độc chết ngay từ đầu.' }));
     }
 }

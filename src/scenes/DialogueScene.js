@@ -40,7 +40,7 @@ export default class DialogueScene extends Phaser.Scene {
         if (this.nextScene === 'SurvivalScene') {
             fullText = "NgÆ°Æ¡i cÃ³ hÃ¬nh hÃ i ká»³ láº¡ quÃ¡... HÃ£y á»Ÿ láº¡i Ä‘Ã¢y, nhÆ°ng ngÆ°Æ¡i pháº£i gá»t Ä‘áº½o báº£n thÃ¢n Ä‘á»ƒ trá»Ÿ nÃªn giá»‘ng chÃºng ta!";
             choices = [
-                { text: "Äá»“ng Ã½ (Lá»±a chá»n sai)", action: () => this.goto('GameOverScene', { reason: 'Máº§m cháº¥p nháº­n biáº¿n cháº¥t vÃ  Ä‘Ã¡nh máº¥t chÃ­nh mÃ¬nh.' }) },
+                { text: "Äá»“ng Ã½ (Lá»±a chá»n sai)", action: () => this.goto('GameOverScene', { reason: 'Mầm chấp nhận biến chất và đánh mất chính mình.' }) },
                 { text: "Tá»« chá»‘i", action: () => this.goto('SurvivalScene') }
             ];
         } else {
