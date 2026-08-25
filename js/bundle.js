@@ -524,15 +524,6 @@
       this.fKey = this.input.keyboard.addKey("F");
       this.stumps = [];
       this.createStump(1480, 1536, 512);
-      this.boxPrompt.setInteractive({ useHandCursor: true });
-      this.boxPrompt.on("pointerdown", () => {
-        if (this.player.body.onFloor()) {
-          this.isAttachedToBox = !this.isAttachedToBox;
-          if (this.isAttachedToBox) {
-            this.boxSide = this.box.x > this.player.x ? "right" : "left";
-          }
-        }
-      });
       let pillar1Bottom = h - 260;
       this.wallJumpLeft = this.add.rectangle(5100, 0, 80, pillar1Bottom, 328968, 1).setOrigin(0, 0);
       let pillar2Top = 150;
@@ -751,7 +742,16 @@
       this.boxVisuals = this.add.container(3100, h - 110);
       let boxImg = this.add.image(0, -30, "map1_box").setOrigin(0.5, 0.5);
       this.boxVisuals.add(boxImg);
-      this.boxPrompt = this.add.text(0, 0, "", { font: "bold 20px Arial", fill: "#ffff00", backgroundColor: "#000000aa", padding: { x: 5, y: 5 } }).setOrigin(0.5).setAlpha(0);
+      this.boxPrompt = this.add.text(0, 0, "", { font: "bold 18px Arial", fill: "#00d2d3", backgroundColor: "#1e272e", padding: { x: 10, y: 6 } }).setOrigin(0.5).setAlpha(0).setDepth(200);
+      this.boxPrompt.setInteractive({ useHandCursor: true });
+      this.boxPrompt.on("pointerdown", () => {
+        if (this.player.body.onFloor()) {
+          this.isAttachedToBox = !this.isAttachedToBox;
+          if (this.isAttachedToBox) {
+            this.boxSide = this.box.x > this.player.x ? "right" : "left";
+          }
+        }
+      });
       this.isAttachedToBox = false;
       this.boxOrigY = h - 110;
       AssetManager.generateAndSave(this, "map1_fg", 5500, h + 1500, (fgGraphics) => {

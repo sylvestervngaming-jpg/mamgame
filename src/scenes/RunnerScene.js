@@ -243,15 +243,6 @@ export default class RunnerScene extends Phaser.Scene {
         this.fKey = this.input.keyboard.addKey('F');
         this.stumps = [];
         this.createStump(1480, 1536, 512);
-        this.boxPrompt.setInteractive({ useHandCursor: true });
-        this.boxPrompt.on('pointerdown', () => {
-            if (this.player.body.onFloor()) {
-                this.isAttachedToBox = !this.isAttachedToBox;
-                if (this.isAttachedToBox) {
-                    this.boxSide = (this.box.x > this.player.x) ? 'right' : 'left';
-                }
-            }
-        });
 
         // Hai trÃ¡Â»Â¥ silhouette Ã„â€˜en tuyÃ¡Â»Ân (nhÃ†Â° parallax)
         // CÃ¡Â»â„¢t 1: TÃ¡Â»Â« trÃƒÂªn nÃƒÂ³c (y=0) rÃ¡Â»Â§ xuÃ¡Â»â€˜ng, chÃ¡Â»Â«a 150px khoÃ¡ÂºÂ£ng trÃ¡Â»â€˜ng Ã¡Â»Å¸ dÃ†Â°Ã¡Â»â€ºi (y=460)
@@ -523,7 +514,16 @@ export default class RunnerScene extends Phaser.Scene {
         let boxImg = this.add.image(0, -30, 'map1_box').setOrigin(0.5, 0.5);
         this.boxVisuals.add(boxImg);
 
-        this.boxPrompt = this.add.text(0, 0, '', { font: 'bold 20px Arial', fill: '#ffff00', backgroundColor: '#000000aa', padding: { x: 5, y: 5 } }).setOrigin(0.5).setAlpha(0);
+        this.boxPrompt = this.add.text(0, 0, '', { font: 'bold 18px Arial', fill: '#00d2d3', backgroundColor: '#1e272e', padding: { x: 10, y: 6 } }).setOrigin(0.5).setAlpha(0).setDepth(200);
+        this.boxPrompt.setInteractive({ useHandCursor: true });
+        this.boxPrompt.on('pointerdown', () => {
+            if (this.player.body.onFloor()) {
+                this.isAttachedToBox = !this.isAttachedToBox;
+                if (this.isAttachedToBox) {
+                    this.boxSide = (this.box.x > this.player.x) ? 'right' : 'left';
+                }
+            }
+        });
         this.isAttachedToBox = false;
         this.boxOrigY = h - 110;
         
