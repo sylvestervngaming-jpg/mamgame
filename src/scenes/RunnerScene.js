@@ -77,7 +77,51 @@ export default class RunnerScene extends Phaser.Scene {
         // NÃ¡Â»Ân Ã„â€˜en thÃ¡ÂºÂ³m che lÃ¡ÂºÂ¥p toÃƒÂ n bÃ¡Â»â„¢ thÃ¡ÂºÂ¿ giÃ¡Â»â€ºi ngÃ¡ÂºÂ§m bÃƒÂªn dÃ†Â°Ã¡Â»â€ºi mÃƒÂ n hÃƒÂ¬nh (dÃƒÂ nh cho cÃƒÂ¡i dÃ¡Â»â€˜c sÃƒÂ¢u 1000px)
         // Removed underground rect
 
-        // Midground Ruins: cleaned up to show full artist background
+        // --- TÀN TÍCH NHÀ CỬA & CỘT BÊ TÔNG ĐỔ NÁT Ở XA (MIDGROUND RUINS - PARALLAX 0.38) ---
+        let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(2);
+        mgGraphics.fillStyle(0x151720, 0.92);
+
+        for (let x = -200; x < w * 6; x += Phaser.Math.Between(200, 380)) {
+            let width = Phaser.Math.Between(80, 170);
+            let height = Phaser.Math.Between(220, 460);
+            
+            // Khối cột bê tông / thân nhà đổ nát
+            mgGraphics.fillRect(x, h - height, width, height + 1500);
+            
+            // Đỉnh bê tông gãy vỡ tự nhiên
+            mgGraphics.beginPath();
+            mgGraphics.moveTo(x, h - height);
+            let segments = 4;
+            let segW = width / segments;
+            for (let s = 1; s <= segments; s++) {
+                let jaggedY = h - height + Phaser.Math.Between(-15, 20);
+                mgGraphics.lineTo(x + s * segW, jaggedY);
+            }
+            mgGraphics.lineTo(x + width, h - height);
+            mgGraphics.fillPath();
+
+            // Khung cửa sổ / lỗ thủng chiến tranh
+            mgGraphics.fillStyle(0x090a0f, 0.95);
+            for (let wy = h - height + 45; wy < h - 40; wy += 50) {
+                if (Math.random() > 0.25) {
+                    mgGraphics.fillRect(x + 14, wy, 18, 25);
+                }
+                if (width > 110 && Math.random() > 0.3) {
+                    mgGraphics.fillRect(x + width - 35, wy, 18, 25);
+                }
+            }
+            mgGraphics.fillStyle(0x151720, 0.92);
+
+            // Cột ăng-ten / cốt thép lòi ra trên nóc
+            if (Math.random() > 0.4) {
+                mgGraphics.lineStyle(2, 0x0a0b10, 0.9);
+                mgGraphics.beginPath();
+                let poleX = x + Phaser.Math.Between(15, width - 15);
+                mgGraphics.moveTo(poleX, h - height);
+                mgGraphics.lineTo(poleX + Phaser.Math.Between(-8, 8), h - height - Phaser.Math.Between(30, 70));
+                mgGraphics.strokePath();
+            }
+        }
 
         // --- NƯỚC ĐỘC ---
 // HÃ¡Â»â€˜ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c Ã¡Â»Å¸ giÃ¡Â»Â¯a (1536 -> 2048)

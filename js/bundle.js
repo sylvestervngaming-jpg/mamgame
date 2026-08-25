@@ -541,6 +541,41 @@
       for (let bi = 0; bi < 6; bi++) {
         this.add.image(w * bi, 0, "war_bg").setOrigin(0, 0).setDisplaySize(w, h).setScrollFactor(0.2);
       }
+      let mgGraphics = this.add.graphics().setScrollFactor(0.38).setDepth(2);
+      mgGraphics.fillStyle(1382176, 0.92);
+      for (let x = -200; x < w * 6; x += Phaser.Math.Between(200, 380)) {
+        let width = Phaser.Math.Between(80, 170);
+        let height = Phaser.Math.Between(220, 460);
+        mgGraphics.fillRect(x, h - height, width, height + 1500);
+        mgGraphics.beginPath();
+        mgGraphics.moveTo(x, h - height);
+        let segments = 4;
+        let segW = width / segments;
+        for (let s = 1; s <= segments; s++) {
+          let jaggedY = h - height + Phaser.Math.Between(-15, 20);
+          mgGraphics.lineTo(x + s * segW, jaggedY);
+        }
+        mgGraphics.lineTo(x + width, h - height);
+        mgGraphics.fillPath();
+        mgGraphics.fillStyle(592399, 0.95);
+        for (let wy = h - height + 45; wy < h - 40; wy += 50) {
+          if (Math.random() > 0.25) {
+            mgGraphics.fillRect(x + 14, wy, 18, 25);
+          }
+          if (width > 110 && Math.random() > 0.3) {
+            mgGraphics.fillRect(x + width - 35, wy, 18, 25);
+          }
+        }
+        mgGraphics.fillStyle(1382176, 0.92);
+        if (Math.random() > 0.4) {
+          mgGraphics.lineStyle(2, 658192, 0.9);
+          mgGraphics.beginPath();
+          let poleX = x + Phaser.Math.Between(15, width - 15);
+          mgGraphics.moveTo(poleX, h - height);
+          mgGraphics.lineTo(poleX + Phaser.Math.Between(-8, 8), h - height - Phaser.Math.Between(30, 70));
+          mgGraphics.strokePath();
+        }
+      }
       this.add.rectangle(1536, h - 30, 512, 1500, 1703970, 0.95).setOrigin(0, 0);
       this.add.rectangle(1536, h - 45, 512, 40, 3342413, 0.7).setOrigin(0, 0);
       AssetManager.generateAndSave(this, "toxic_lake", 512, 20, (g) => {
