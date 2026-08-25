@@ -202,6 +202,52 @@
   // src/utils/AtmosphereFX.js
   var AtmosphereFX = class {
     /**
+     * Cập nhật bóng đổ nghiêng thời gian thực (Dynamic Directional Shadow) theo góc chiếu tia sáng
+     * @param {Phaser.GameObjects.Shape} shadow 
+     * @param {number} entityX 
+     * @param {number} entityY 
+     * @param {number} groundY 
+     * @param {number} slope 
+     * @param {number} lightAngleFactor 
+     */
+    static updateDirectionalShadow(shadow, entityX, entityY, groundY, slope = 0, lightAngleFactor = 0.45) {
+      if (!shadow) return;
+      let distToGround = Math.max(0, groundY - entityY);
+      shadow.x = entityX + distToGround * lightAngleFactor;
+      shadow.y = groundY;
+      shadow.setRotation(Math.atan(slope));
+      let scaleX = Math.max(0.25, 1 - distToGround / 380);
+      let scaleY = Math.max(0.12, (1 - distToGround / 280) * 0.55);
+      let alpha = Math.max(0.05, 0.65 * (1 - distToGround / 320));
+      shadow.setScale(scaleX, scaleY);
+      shadow.setAlpha(alpha);
+    }
+    /**
+     * Tạo nguồn sáng điểm động thời gian thực (Dynamic Realtime Point Light)
+     * @param {Phaser.Scene} scene 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} radius 
+     * @param {number} color 
+     * @param {number} intensity 
+     */
+    static createDynamicPointLight(scene, x, y, radius = 220, color = 16775904, intensity = 0.35) {
+      if (!scene.textures.exists("point_light_texture")) {
+        let canvas = scene.textures.createCanvas("point_light_texture", 256, 256);
+        let ctx = canvas.getContext();
+        let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+        rad.addColorStop(0, "rgba(255, 255, 255, 1.0)");
+        rad.addColorStop(0.3, "rgba(255, 255, 255, 0.6)");
+        rad.addColorStop(0.7, "rgba(255, 255, 255, 0.15)");
+        rad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = rad;
+        ctx.fillRect(0, 0, 256, 256);
+        canvas.refresh();
+      }
+      let light = scene.add.image(x, y, "point_light_texture").setDisplaySize(radius * 2, radius * 2).setTint(color).setAlpha(intensity).setBlendMode("ADD").setDepth(7);
+      return light;
+    }
+    /**
      * Tạo các vệt sáng chiếu xuyên không gian (God Rays / Volumetric Light Beams)
      * @param {Phaser.Scene} scene 
      * @param {Object} config { x, y, count, width, height, angle, color, alpha }
@@ -725,7 +771,11 @@
       this.physics.add.collider(this.player, this.groundGroup);
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
-      this.shadow = this.add.ellipse(200, h - 110, 60, 15, 0, 0.6).setDepth(9);
+      this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0, 0.65).setDepth(9);
+      this.playerGroundLight = AtmosphereFX.createDynamicPointLight(this, 200, h - 110, 140, 3066993, 0.22);
+      this.registry.events.on("changedata-playerColor", (parent, color) => {
+        if (this.playerGroundLight) this.playerGroundLight.setTint(color);
+      });
       this.playerBloom = AtmosphereFX.createPlayerBloom(this, this.player);
       AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
         g.fillStyle(16777215);
@@ -929,7 +979,8 @@
       this.box.body.setImmovable(true);
       this.box.body.setAllowGravity(false);
       this.boxCollider = this.physics.add.collider(this.player, this.box);
-      this.boxVisuals = this.add.container(3100, h - 110);
+      this.boxShadow = this.add.ellipse(3112, h - 110, 70, 16, 0, 0.55).setDepth(4);
+      this.boxVisuals = this.add.container(3100, h - 110).setDepth(15);
       let boxImg = this.add.image(0, -30, "map1_box").setOrigin(0.5, 0.5);
       this.boxVisuals.add(boxImg);
       this.boxPrompt = this.add.text(0, 0, "", { font: "bold 18px Arial", fill: "#00d2d3", backgroundColor: "#1e272e", padding: { x: 10, y: 6 } }).setOrigin(0.5).setAlpha(0).setDepth(200);
@@ -1019,13 +1070,11 @@
         this.playerBloom.update(this.player.x, this.player.y);
       }
       let groundY = this.getTerrainY(this.player.x);
-      this.shadow.x = this.player.x;
-      this.shadow.y = groundY;
-      let distToGround = groundY - (this.player.y + 40);
-      if (distToGround < 0) distToGround = 0;
-      let shadowScale = Math.max(0, 1 - distToGround / 200);
-      this.shadow.setScale(shadowScale);
-      this.shadow.setAlpha(0.6 * shadowScale);
+      let slope = this.getTerrainSlope(this.player.x);
+      AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
+      if (this.playerGroundLight) {
+        this.playerGroundLight.setPosition(this.player.x, groundY - 5);
+      }
       if (this.isCinematic) return;
       let pX = this.player.x;
       let pY = this.player.y;
@@ -1083,22 +1132,22 @@
         }
       }
       if (isGrounded) {
-        let slope = this.getTerrainSlope(pX);
-        if (slope < -0.1 && isMovingRight) {
+        let slope2 = this.getTerrainSlope(pX);
+        if (slope2 < -0.1 && isMovingRight) {
           this.player.body.velocity.x *= 0.5;
-        } else if (slope > 0.1 && isMovingLeft) {
+        } else if (slope2 > 0.1 && isMovingLeft) {
           this.player.body.velocity.x *= 0.5;
         }
         if (!isMovingLeft && !isMovingRight) {
-          if (slope > 0.1) {
-            this.player.body.velocity.x += slope * 15;
-          } else if (slope < -0.1) {
-            this.player.body.velocity.x += slope * 15;
+          if (slope2 > 0.1) {
+            this.player.body.velocity.x += slope2 * 15;
+          } else if (slope2 < -0.1) {
+            this.player.body.velocity.x += slope2 * 15;
           }
         } else {
-          if (slope > 0.1 && isMovingRight) {
+          if (slope2 > 0.1 && isMovingRight) {
             this.player.body.velocity.x += 100;
-          } else if (slope < -0.1 && isMovingLeft) {
+          } else if (slope2 < -0.1 && isMovingLeft) {
             this.player.body.velocity.x -= 100;
           }
         }
@@ -1226,6 +1275,7 @@
         this.box.setPosition(boxTargetX, this.boxOrigY);
         this.box.body.reset(boxTargetX, this.boxOrigY);
         this.boxVisuals.setPosition(boxTargetX, this.boxOrigY);
+        if (this.boxShadow) this.boxShadow.setPosition(boxTargetX + 12, this.boxOrigY);
         if (this.boxSide === "right" && this.player.x > boxTargetX - 50) {
           this.player.x = boxTargetX - 50;
           this.player.body.setVelocityX(0);

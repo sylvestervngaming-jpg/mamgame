@@ -1,5 +1,68 @@
 export default class AtmosphereFX {
     /**
+     * Cập nhật bóng đổ nghiêng thời gian thực (Dynamic Directional Shadow) theo góc chiếu tia sáng
+     * @param {Phaser.GameObjects.Shape} shadow 
+     * @param {number} entityX 
+     * @param {number} entityY 
+     * @param {number} groundY 
+     * @param {number} slope 
+     * @param {number} lightAngleFactor 
+     */
+    static updateDirectionalShadow(shadow, entityX, entityY, groundY, slope = 0, lightAngleFactor = 0.45) {
+        if (!shadow) return;
+        
+        let distToGround = Math.max(0, groundY - entityY);
+        
+        // Tọa độ bóng trượt nghiêng theo độ cao khi nhảy
+        shadow.x = entityX + (distToGround * lightAngleFactor);
+        shadow.y = groundY;
+        
+        // Xoay bóng theo độ dốc mặt đất
+        shadow.setRotation(Math.atan(slope));
+        
+        // Co dãn và làm mờ bóng theo độ cao
+        let scaleX = Math.max(0.25, (1 - (distToGround / 380)));
+        let scaleY = Math.max(0.12, (1 - (distToGround / 280)) * 0.55);
+        let alpha = Math.max(0.05, 0.65 * (1 - (distToGround / 320)));
+        
+        shadow.setScale(scaleX, scaleY);
+        shadow.setAlpha(alpha);
+    }
+
+    /**
+     * Tạo nguồn sáng điểm động thời gian thực (Dynamic Realtime Point Light)
+     * @param {Phaser.Scene} scene 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} radius 
+     * @param {number} color 
+     * @param {number} intensity 
+     */
+    static createDynamicPointLight(scene, x, y, radius = 220, color = 0xfffae0, intensity = 0.35) {
+        if (!scene.textures.exists('point_light_texture')) {
+            let canvas = scene.textures.createCanvas('point_light_texture', 256, 256);
+            let ctx = canvas.getContext();
+            let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            rad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            rad.addColorStop(0.3, 'rgba(255, 255, 255, 0.6)');
+            rad.addColorStop(0.7, 'rgba(255, 255, 255, 0.15)');
+            rad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, 256, 256);
+            canvas.refresh();
+        }
+
+        let light = scene.add.image(x, y, 'point_light_texture')
+            .setDisplaySize(radius * 2, radius * 2)
+            .setTint(color)
+            .setAlpha(intensity)
+            .setBlendMode('ADD')
+            .setDepth(7);
+
+        return light;
+    }
+
+    /**
      * Tạo các vệt sáng chiếu xuyên không gian (God Rays / Volumetric Light Beams)
      * @param {Phaser.Scene} scene 
      * @param {Object} config { x, y, count, width, height, angle, color, alpha }
