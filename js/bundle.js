@@ -618,8 +618,11 @@
                   this.cameras.main.startFollow(this.player, true, 0.05, 0.05, -w / 4, 200);
                   let tutContainer = this.add.container(this.player.x + 300, this.player.y - 120);
                   let tutBg = this.add.rectangle(0, 0, 500, 100, 0, 0.7).setStrokeStyle(2, 65280);
-                  let tutText1 = this.add.text(0, -20, "D\xF9ng c\xE1c ph\xEDm A, D (M\u0169i t\xEAn) \u0111\u1EC3 \u0111i l\u1EA1i", { font: "bold 20px Arial", fill: "#ffffff", align: "center" }).setOrigin(0.5);
-                  let tutText2 = this.add.text(0, 20, "D\xF9ng ph\xEDm Space \u0111\u1EC3 Nh\u1EA3y", { font: "bold 20px Arial", fill: "#00ff00", align: "center" }).setOrigin(0.5);
+                  let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+                  let line1 = isMobile ? "D\xF9ng n\xFAt \u25C4 \u25BA b\xEAn tr\xE1i \u0111\u1EC3 \u0111i l\u1EA1i" : "D\xF9ng c\xE1c ph\xEDm A, D (M\u0169i t\xEAn) \u0111\u1EC3 \u0111i l\u1EA1i";
+                  let line2 = isMobile ? "D\xF9ng n\xFAt \u2B06 b\xEAn ph\u1EA3i \u0111\u1EC3 Nh\u1EA3y" : "D\xF9ng ph\xEDm Space ho\u1EB7c W \u0111\u1EC3 Nh\u1EA3y";
+                  let tutText1 = this.add.text(0, -20, line1, { font: "bold 20px Arial", fill: "#ffffff", align: "center" }).setOrigin(0.5);
+                  let tutText2 = this.add.text(0, 20, line2, { font: "bold 20px Arial", fill: "#00d2d3", align: "center" }).setOrigin(0.5);
                   tutContainer.add([tutBg, tutText1, tutText2]);
                   tutContainer.setAlpha(0);
                   this.tweens.add({ targets: tutContainer, alpha: 1, duration: 1e3, yoyo: true, hold: 6e3 });
@@ -834,7 +837,7 @@
       if (this.isCinematic) return;
       let pX = this.player.x;
       let pY = this.player.y;
-      let isGrounded = this.player.body.touching.down;
+      let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
       let touch = this.registry.get("touchControls");
       let isTouchLeft = !!(touch && touch.isLeft);
       let isTouchRight = !!(touch && touch.isRight);
@@ -851,7 +854,7 @@
       let inWallJumpZone = this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150;
       if (isSpacePressed && !this.isAttachedToBox) {
         if (isGrounded) {
-          this.player.body.setVelocityY(-600);
+          this.player.body.setVelocityY(-650);
           isJumping = true;
           this.dustEmitter.explode(10, this.player.x, this.player.y + 40);
           this.lastWallJump = null;
@@ -1038,9 +1041,10 @@
           this.player.x = boxTargetX + 50;
           this.player.body.setVelocityX(0);
         }
+        let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
         this.boxPrompt.x = this.box.x;
         this.boxPrompt.y = this.box.y - 80;
-        this.boxPrompt.setText("B\u1EA5m F \u0111\u1EC3 Bu\xF4ng ra");
+        this.boxPrompt.setText(isMobile ? "\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 Bu\xF4ng ra" : "\u{1F4E6} B\u1EA5m F \u0111\u1EC3 Bu\xF4ng ra");
         this.boxPrompt.setAlpha(1);
         if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
           this.isAttachedToBox = false;
@@ -1048,9 +1052,10 @@
           this.boxCollider.active = true;
         }
       } else if (isNearBox) {
+        let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
         this.boxPrompt.x = this.box.x;
         this.boxPrompt.y = this.box.y - 80;
-        this.boxPrompt.setText("\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 C\u1EA7m h\u1ED9p");
+        this.boxPrompt.setText(isMobile ? "\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 C\u1EA7m h\u1ED9p" : "\u{1F4E6} B\u1EA5m F \u0111\u1EC3 C\u1EA7m h\u1ED9p");
         this.boxPrompt.setAlpha(1);
         if (Phaser.Input.Keyboard.JustDown(this.fKey) && this.player.body.onFloor()) {
           this.isAttachedToBox = true;
@@ -1397,7 +1402,9 @@
       stumpContainer.isBloomed = false;
       stumpContainer.bridgeStartX = bridgeStartX;
       stumpContainer.bridgeLength = bridgeLength;
-      let prompt = this.add.text(x, h - 200, "\u{1F331} Ch\u1EA1m \u0111\u1EC3 h\u1ED3i sinh c\xE2y", {
+      let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      let stumpLabel = isMobile ? "\u{1F331} Ch\u1EA1m \u0111\u1EC3 h\u1ED3i sinh c\xE2y" : "\u{1F331} B\u1EA5m F \u0111\u1EC3 h\u1ED3i sinh c\xE2y";
+      let prompt = this.add.text(x, h - 200, stumpLabel, {
         font: "bold 18px Arial",
         fill: "#00d2d3",
         backgroundColor: "#1e272e",
@@ -2055,7 +2062,9 @@
         this.triggerPause();
       });
       this.bagBtnBg = this.add.rectangle(85, 65, 120, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
-      this.bagBtnText = this.add.text(85, 65, "\u{1F392} T\xFAi \u0110\u1ED3 [B]", {
+      let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      let bagLabel = isMobile ? "\u{1F392} T\xFAi \u0110\u1ED3" : "\u{1F392} T\xFAi \u0110\u1ED3 [B]";
+      this.bagBtnText = this.add.text(85, 65, bagLabel, {
         font: "bold 14px Arial",
         fill: "#00d2d3"
       }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
@@ -2819,7 +2828,9 @@
       scene.add.existing(this);
       scene.physics.add.existing(this, true);
       this.setOrigin(0.5, 1);
-      this.promptText = scene.add.text(x, y - 80, "\u{1F4AC} Ch\u1EA1m \u0111\u1EC3 n\xF3i chuy\u1EC7n", {
+      let isMobile = scene.sys.game.device.os.android || scene.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      let promptLabel = isMobile ? "\u{1F4AC} Ch\u1EA1m \u0111\u1EC3 n\xF3i chuy\u1EC7n" : "\u{1F4AC} B\u1EA5m F \u0111\u1EC3 n\xF3i chuy\u1EC7n";
+      this.promptText = scene.add.text(x, y - 80, promptLabel, {
         font: "bold 16px Arial",
         fill: "#00d2d3",
         backgroundColor: "#1e272e",

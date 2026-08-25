@@ -361,8 +361,11 @@ export default class RunnerScene extends Phaser.Scene {
                                 
                                 let tutContainer = this.add.container(this.player.x + 300, this.player.y - 120);
                                 let tutBg = this.add.rectangle(0, 0, 500, 100, 0x000000, 0.7).setStrokeStyle(2, 0x00ff00);
-                                let tutText1 = this.add.text(0, -20, 'Dùng các phím A, D (Mũi tên) để đi lại', { font: 'bold 20px Arial', fill: '#ffffff', align: 'center' }).setOrigin(0.5);
-                                let tutText2 = this.add.text(0, 20, 'Dùng phím Space để Nhảy', { font: 'bold 20px Arial', fill: '#00ff00', align: 'center' }).setOrigin(0.5);
+                                let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                                let line1 = isMobile ? 'Dùng nút ◄ ► bên trái để đi lại' : 'Dùng các phím A, D (Mũi tên) để đi lại';
+                                let line2 = isMobile ? 'Dùng nút ⬆ bên phải để Nhảy' : 'Dùng phím Space hoặc W để Nhảy';
+                                let tutText1 = this.add.text(0, -20, line1, { font: 'bold 20px Arial', fill: '#ffffff', align: 'center' }).setOrigin(0.5);
+                                let tutText2 = this.add.text(0, 20, line2, { font: 'bold 20px Arial', fill: '#00d2d3', align: 'center' }).setOrigin(0.5);
                                 tutContainer.add([tutBg, tutText1, tutText2]);
                                 tutContainer.setAlpha(0);
                                 this.tweens.add({ targets: tutContainer, alpha: 1, duration: 1000, yoyo: true, hold: 6000 });
@@ -642,7 +645,7 @@ export default class RunnerScene extends Phaser.Scene {
         let pY = this.player.y;
 
         // SÃ¡Â»Â­ dÃ¡Â»Â¥ng Arcade Physics Ã„â€˜Ã¡Â»Æ’ kiÃ¡Â»Æ’m tra Ã„â€˜Ã¡Â»Â©ng trÃƒÂªn Ã„â€˜Ã¡ÂºÂ¥t (hoÃ¡ÂºÂ·c hÃ¡Â»â„¢p)
-        let isGrounded = this.player.body.touching.down;
+        let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
         let touch = this.registry.get("touchControls");
         let isTouchLeft = !!(touch && touch.isLeft);
         let isTouchRight = !!(touch && touch.isRight);
@@ -668,7 +671,7 @@ export default class RunnerScene extends Phaser.Scene {
         if (isSpacePressed && !this.isAttachedToBox) {
             if (isGrounded) {
                 // NhÃ¡ÂºÂ£y thÃ†Â°Ã¡Â»Âng
-                this.player.body.setVelocityY(-600);
+                this.player.body.setVelocityY(-650);
                 isJumping = true;
                 this.dustEmitter.explode(10, this.player.x, this.player.y + 40);
                 this.lastWallJump = null;
@@ -909,9 +912,10 @@ export default class RunnerScene extends Phaser.Scene {
                 this.player.body.setVelocityX(0);
             }
 
+            let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
             this.boxPrompt.x = this.box.x;
             this.boxPrompt.y = this.box.y - 80;
-            this.boxPrompt.setText('Bấm F để Buông ra');
+            this.boxPrompt.setText(isMobile ? '📦 Chạm để Buông ra' : '📦 Bấm F để Buông ra');
             this.boxPrompt.setAlpha(1);
 
             // BuÃƒÂ´ng ra khi bÃ¡ÂºÂ¥m F
@@ -921,9 +925,10 @@ export default class RunnerScene extends Phaser.Scene {
                 this.boxCollider.active = true; // BÃ¡ÂºÂ­t lÃ¡ÂºÂ¡i collider Ã„â€˜Ã¡Â»Æ’ nhÃ¡ÂºÂ£y lÃƒÂªn hÃ¡Â»â„¢p
             }
         } else if (isNearBox) {
+            let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
             this.boxPrompt.x = this.box.x;
             this.boxPrompt.y = this.box.y - 80;
-            this.boxPrompt.setText('📦 Chạm để Cầm hộp');
+            this.boxPrompt.setText(isMobile ? '📦 Chạm để Cầm hộp' : '📦 Bấm F để Cầm hộp');
             this.boxPrompt.setAlpha(1);
 
             if (Phaser.Input.Keyboard.JustDown(this.fKey) && this.player.body.onFloor()) {
@@ -1373,7 +1378,9 @@ export default class RunnerScene extends Phaser.Scene {
         stumpContainer.bridgeStartX = bridgeStartX;
         stumpContainer.bridgeLength = bridgeLength;
         
-        let prompt = this.add.text(x, h - 200, '🌱 Chạm để hồi sinh cây', { 
+        let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        let stumpLabel = isMobile ? '🌱 Chạm để hồi sinh cây' : '🌱 Bấm F để hồi sinh cây';
+        let prompt = this.add.text(x, h - 200, stumpLabel, { 
             font: 'bold 18px Arial', 
             fill: '#00d2d3', 
             backgroundColor: '#1e272e', 

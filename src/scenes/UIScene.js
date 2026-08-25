@@ -81,7 +81,9 @@ export default class UIScene extends Phaser.Scene {
             .setScrollFactor(0).setDepth(2500)
             .setInteractive({ useHandCursor: true });
 
-        this.bagBtnText = this.add.text(85, 65, '🎒 Túi Đồ [B]', {
+        let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        let bagLabel = isMobile ? '🎒 Túi Đồ' : '🎒 Túi Đồ [B]';
+        this.bagBtnText = this.add.text(85, 65, bagLabel, {
             font: 'bold 14px Arial',
             fill: '#00d2d3'
         }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
