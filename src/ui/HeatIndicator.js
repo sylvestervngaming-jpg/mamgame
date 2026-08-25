@@ -7,7 +7,7 @@ export default class HeatIndicator extends Phaser.GameObjects.Container {
         this.setDepth(2000);
 
         const cx = scene.cameras.main.width / 2;
-        const cy = 45;
+        const cy = 65;
 
         // Background khung chứa
         this.bg = scene.add.rectangle(cx, cy, 260, 48, 0x1a1a1a, 0.85)

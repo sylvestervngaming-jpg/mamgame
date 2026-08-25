@@ -89,10 +89,25 @@ export default class MapSelectionScene extends Phaser.Scene {
             this.time.delayedCall(500, () => this.scene.start('Map5Scene'));
         });
 
-        let backBtn = this.add.text(50, 50, '< QUAY LẠI MENU', { font: 'bold 24px Arial', fill: '#ffffff' }).setInteractive({ useHandCursor: true });
-        backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
-        backBtn.on('pointerover', () => backBtn.setFill('#ff0000'));
-        backBtn.on('pointerout', () => backBtn.setFill('#ffffff'));
+        let backContainer = this.add.container(130, 60);
+        let backBg = this.add.rectangle(0, 0, 200, 46, 0x1e272e, 0.9)
+            .setStrokeStyle(2, 0x00d2d3)
+            .setInteractive({ useHandCursor: true });
+        let backText = this.add.text(0, 0, '⬅ QUAY LẠI', { font: 'bold 18px Arial', fill: '#00d2d3' }).setOrigin(0.5);
+        backContainer.add([backBg, backText]);
+
+        backBg.on('pointerdown', () => {
+            this.cameras.main.fadeOut(300, 0, 0, 0);
+            this.time.delayedCall(300, () => this.scene.start('MenuScene'));
+        });
+        backBg.on('pointerover', () => {
+            backBg.setFillStyle(0x00d2d3);
+            backText.setFill('#1e272e');
+        });
+        backBg.on('pointerout', () => {
+            backBg.setFillStyle(0x1e272e);
+            backText.setFill('#00d2d3');
+        });
     }
 
 }

@@ -82,6 +82,9 @@ export default class TransitionScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
 
         this.hasTriggered = false;
+        this.registry.set('showUI', true);
+        this.scene.launch('UIScene');
+        this.scene.bringToTop('UIScene');
     }
 
     update() {
@@ -110,9 +113,13 @@ export default class TransitionScene extends Phaser.Scene {
             });
         }
 
-        if (this.cursors.right.isDown || this.dKey.isDown) {
+        let touch = this.registry.get('touchControls');
+        let isMovingRight = (this.cursors.right && this.cursors.right.isDown) || (this.dKey && this.dKey.isDown) || !!(touch && touch.isRight);
+        let isMovingLeft = (this.cursors.left && this.cursors.left.isDown) || (this.aKey && this.aKey.isDown) || !!(touch && touch.isLeft);
+
+        if (isMovingRight) {
             this.player.body.setVelocityX(300);
-        } else if (this.cursors.left.isDown || this.aKey.isDown) {
+        } else if (isMovingLeft) {
             this.player.body.setVelocityX(-300);
         } else {
             this.player.body.setVelocityX(0);

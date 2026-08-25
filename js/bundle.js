@@ -2327,10 +2327,22 @@
         this.cameras.main.fadeOut(500, 255, 255, 255);
         this.time.delayedCall(500, () => this.scene.start("Map5Scene"));
       });
-      let backBtn = this.add.text(50, 50, "< QUAY L\u1EA0I MENU", { font: "bold 24px Arial", fill: "#ffffff" }).setInteractive({ useHandCursor: true });
-      backBtn.on("pointerdown", () => this.scene.start("MenuScene"));
-      backBtn.on("pointerover", () => backBtn.setFill("#ff0000"));
-      backBtn.on("pointerout", () => backBtn.setFill("#ffffff"));
+      let backContainer = this.add.container(130, 60);
+      let backBg = this.add.rectangle(0, 0, 200, 46, 1976110, 0.9).setStrokeStyle(2, 53971).setInteractive({ useHandCursor: true });
+      let backText = this.add.text(0, 0, "\u2B05 QUAY L\u1EA0I", { font: "bold 18px Arial", fill: "#00d2d3" }).setOrigin(0.5);
+      backContainer.add([backBg, backText]);
+      backBg.on("pointerdown", () => {
+        this.cameras.main.fadeOut(300, 0, 0, 0);
+        this.time.delayedCall(300, () => this.scene.start("MenuScene"));
+      });
+      backBg.on("pointerover", () => {
+        backBg.setFillStyle(53971);
+        backText.setFill("#1e272e");
+      });
+      backBg.on("pointerout", () => {
+        backBg.setFillStyle(1976110);
+        backText.setFill("#00d2d3");
+      });
     }
   };
 
@@ -2391,6 +2403,9 @@
       this.cameras.main.setBounds(0, 0, w * 3, h);
       this.cameras.main.startFollow(this.player);
       this.hasTriggered = false;
+      this.registry.set("showUI", true);
+      this.scene.launch("UIScene");
+      this.scene.bringToTop("UIScene");
     }
     update() {
       this.playerSprite.x = this.player.x;
@@ -2411,9 +2426,12 @@
           this.scene.start("Map2Scene");
         });
       }
-      if (this.cursors.right.isDown || this.dKey.isDown) {
+      let touch = this.registry.get("touchControls");
+      let isMovingRight = this.cursors.right && this.cursors.right.isDown || this.dKey && this.dKey.isDown || !!(touch && touch.isRight);
+      let isMovingLeft = this.cursors.left && this.cursors.left.isDown || this.aKey && this.aKey.isDown || !!(touch && touch.isLeft);
+      if (isMovingRight) {
         this.player.body.setVelocityX(300);
-      } else if (this.cursors.left.isDown || this.aKey.isDown) {
+      } else if (isMovingLeft) {
         this.player.body.setVelocityX(-300);
       } else {
         this.player.body.setVelocityX(0);
@@ -3108,7 +3126,7 @@
       this.setScrollFactor(0);
       this.setDepth(2e3);
       const cx = scene.cameras.main.width / 2;
-      const cy = 45;
+      const cy = 65;
       this.bg = scene.add.rectangle(cx, cy, 260, 48, 1710618, 0.85).setStrokeStyle(3, 15844367);
       this.barBg = scene.add.rectangle(cx, cy + 8, 220, 10, 3355443);
       this.barFill = scene.add.rectangle(cx - 110, cy + 8, 220, 10, 15844367).setOrigin(0, 0.5);
