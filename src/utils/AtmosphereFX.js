@@ -82,23 +82,44 @@ export default class AtmosphereFX {
     static createPlayerBloom(scene, targetSprite) {
         let initialColor = scene.registry.get('playerColor') || 0x2ecc71;
 
-        let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(targetSprite.depth - 1);
+        // Tạo texture hào quang mờ radial gradient siêu mịn (Không có viền sắc cạnh)
+        if (!scene.textures.exists('soft_radial_glow')) {
+            let canvas = scene.textures.createCanvas('soft_radial_glow', 256, 256);
+            let ctx = canvas.getContext();
+            let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            rad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            rad.addColorStop(0.25, 'rgba(255, 255, 255, 0.6)');
+            rad.addColorStop(0.55, 'rgba(255, 255, 255, 0.2)');
+            rad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, 256, 256);
+            canvas.refresh();
+        }
 
-        // Lớp 1: Lõi sáng rực (Core Light)
-        let coreLight = scene.add.circle(0, -25, 36, initialColor, 0.45).setBlendMode('ADD');
-        // Lớp 2: Hào quang tỏa dịu (Ambient Aura)
-        let midAura = scene.add.circle(0, -25, 80, initialColor, 0.2).setBlendMode('ADD');
-        // Lớp 3: Vành nhật hoa huyền ảo (Faint Corona)
-        let outerCorona = scene.add.circle(0, -25, 140, initialColor, 0.08).setBlendMode('ADD');
+        let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(9);
 
-        container.add([outerCorona, midAura, coreLight]);
+        // Ảnh hào quang tỏa sáng mềm mại đa lớp
+        let innerGlow = scene.add.image(0, 0, 'soft_radial_glow')
+            .setDisplaySize(90, 90)
+            .setTint(initialColor)
+            .setAlpha(0.6)
+            .setBlendMode('ADD');
 
-        // Hoạt ảnh "thở" (Breathing Pulse)
+        let outerGlow = scene.add.image(0, 0, 'soft_radial_glow')
+            .setDisplaySize(180, 180)
+            .setTint(initialColor)
+            .setAlpha(0.3)
+            .setBlendMode('ADD');
+
+        container.add([outerGlow, innerGlow]);
+
+        // Hoạt ảnh tỏa sáng nhịp thở (Breathing Pulse)
         scene.tweens.add({
-            targets: [midAura, outerCorona],
-            scaleX: 1.15,
-            scaleY: 1.15,
-            duration: 1600,
+            targets: outerGlow,
+            scaleX: 1.25,
+            scaleY: 1.25,
+            alpha: 0.15,
+            duration: 1500,
             yoyo: true,
             repeat: -1,
             ease: 'Sine.easeInOut'
@@ -106,16 +127,16 @@ export default class AtmosphereFX {
 
         // Lắng nghe thay đổi màu sắc trang phục
         let colorListener = (parent, color) => {
-            coreLight.setFillStyle(color, 0.45);
-            midAura.setFillStyle(color, 0.2);
-            outerCorona.setFillStyle(color, 0.08);
+            innerGlow.setTint(color);
+            outerGlow.setTint(color);
         };
         scene.registry.events.on('changedata-playerColor', colorListener);
 
         return {
             container,
             update: (x, y) => {
-                container.setPosition(x, y);
+                // Đặt hào quang đúng ngay trọng tâm cơ thể của Mầm
+                container.setPosition(x, y - 25);
             },
             destroy: () => {
                 scene.registry.events.off('changedata-playerColor', colorListener);

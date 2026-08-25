@@ -272,30 +272,41 @@
      */
     static createPlayerBloom(scene, targetSprite) {
       let initialColor = scene.registry.get("playerColor") || 3066993;
-      let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(targetSprite.depth - 1);
-      let coreLight = scene.add.circle(0, -25, 36, initialColor, 0.45).setBlendMode("ADD");
-      let midAura = scene.add.circle(0, -25, 80, initialColor, 0.2).setBlendMode("ADD");
-      let outerCorona = scene.add.circle(0, -25, 140, initialColor, 0.08).setBlendMode("ADD");
-      container.add([outerCorona, midAura, coreLight]);
+      if (!scene.textures.exists("soft_radial_glow")) {
+        let canvas = scene.textures.createCanvas("soft_radial_glow", 256, 256);
+        let ctx = canvas.getContext();
+        let rad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+        rad.addColorStop(0, "rgba(255, 255, 255, 1.0)");
+        rad.addColorStop(0.25, "rgba(255, 255, 255, 0.6)");
+        rad.addColorStop(0.55, "rgba(255, 255, 255, 0.2)");
+        rad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = rad;
+        ctx.fillRect(0, 0, 256, 256);
+        canvas.refresh();
+      }
+      let container = scene.add.container(targetSprite.x, targetSprite.y).setDepth(9);
+      let innerGlow = scene.add.image(0, 0, "soft_radial_glow").setDisplaySize(90, 90).setTint(initialColor).setAlpha(0.6).setBlendMode("ADD");
+      let outerGlow = scene.add.image(0, 0, "soft_radial_glow").setDisplaySize(180, 180).setTint(initialColor).setAlpha(0.3).setBlendMode("ADD");
+      container.add([outerGlow, innerGlow]);
       scene.tweens.add({
-        targets: [midAura, outerCorona],
-        scaleX: 1.15,
-        scaleY: 1.15,
-        duration: 1600,
+        targets: outerGlow,
+        scaleX: 1.25,
+        scaleY: 1.25,
+        alpha: 0.15,
+        duration: 1500,
         yoyo: true,
         repeat: -1,
         ease: "Sine.easeInOut"
       });
       let colorListener = (parent, color) => {
-        coreLight.setFillStyle(color, 0.45);
-        midAura.setFillStyle(color, 0.2);
-        outerCorona.setFillStyle(color, 0.08);
+        innerGlow.setTint(color);
+        outerGlow.setTint(color);
       };
       scene.registry.events.on("changedata-playerColor", colorListener);
       return {
         container,
         update: (x, y) => {
-          container.setPosition(x, y);
+          container.setPosition(x, y - 25);
         },
         destroy: () => {
           scene.registry.events.off("changedata-playerColor", colorListener);
