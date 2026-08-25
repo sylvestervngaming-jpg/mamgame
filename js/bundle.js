@@ -740,7 +740,9 @@
         g.fillCircle(53, 53, 2);
       });
       this.box = this.add.rectangle(3100, h - 110, 60, 60, 0, 0).setOrigin(0.5, 1);
-      this.physics.add.existing(this.box, true);
+      this.physics.add.existing(this.box);
+      this.box.body.setImmovable(true);
+      this.box.body.setAllowGravity(false);
       this.boxCollider = this.physics.add.collider(this.player, this.box);
       this.boxVisuals = this.add.container(3100, h - 110);
       let boxImg = this.add.image(0, -30, "map1_box").setOrigin(0.5, 0.5);
@@ -752,7 +754,7 @@
           this.isAttachedToBox = false;
           this.player.body.setMaxVelocityX(400);
           this.boxCollider.active = true;
-          this.box.refreshBody();
+          this.box.body.reset(this.box.x, this.boxOrigY);
         } else if (this.player.body.onFloor()) {
           this.isAttachedToBox = true;
           this.boxSide = this.box.x > this.player.x ? "right" : "left";
@@ -1036,7 +1038,7 @@
         let boxMinX = boxHalfW;
         boxTargetX = Phaser.Math.Clamp(boxTargetX, boxMinX, boxMaxX);
         this.box.setPosition(boxTargetX, this.boxOrigY);
-        this.box.refreshBody();
+        this.box.body.reset(boxTargetX, this.boxOrigY);
         this.boxVisuals.setPosition(boxTargetX, this.boxOrigY);
         if (this.boxSide === "right" && this.player.x > boxTargetX - 50) {
           this.player.x = boxTargetX - 50;
@@ -1054,7 +1056,7 @@
           this.isAttachedToBox = false;
           this.player.body.setMaxVelocityX(400);
           this.boxCollider.active = true;
-          this.box.refreshBody();
+          this.box.body.reset(this.box.x, this.boxOrigY);
         }
       } else if (isNearBox) {
         let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;

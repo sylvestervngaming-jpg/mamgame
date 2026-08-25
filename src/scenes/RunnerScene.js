@@ -510,7 +510,9 @@ export default class RunnerScene extends Phaser.Scene {
         
         
         this.box = this.add.rectangle(3100, h - 110, 60, 60, 0x000000, 0).setOrigin(0.5, 1);
-        this.physics.add.existing(this.box, true);
+        this.physics.add.existing(this.box);
+        this.box.body.setImmovable(true);
+        this.box.body.setAllowGravity(false);
         this.boxCollider = this.physics.add.collider(this.player, this.box);
         
         this.boxVisuals = this.add.container(3100, h - 110);
@@ -525,7 +527,7 @@ export default class RunnerScene extends Phaser.Scene {
                 this.isAttachedToBox = false;
                 this.player.body.setMaxVelocityX(400);
                 this.boxCollider.active = true;
-                this.box.refreshBody();
+                this.box.body.reset(this.box.x, this.boxOrigY);
             } else if (this.player.body.onFloor()) {
                 // Cầm hộp vào
                 this.isAttachedToBox = true;
@@ -906,7 +908,7 @@ export default class RunnerScene extends Phaser.Scene {
             boxTargetX = Phaser.Math.Clamp(boxTargetX, boxMinX, boxMaxX);
 
             this.box.setPosition(boxTargetX, this.boxOrigY);
-            this.box.refreshBody();
+            this.box.body.reset(boxTargetX, this.boxOrigY);
             this.boxVisuals.setPosition(boxTargetX, this.boxOrigY);
 
             // Clamp player: khÃƒÂ´ng Ã„â€˜i chÃ¡Â»â€œng lÃƒÂªn hÃ¡Â»â„¢p khi hÃ¡Â»â„¢p Ã„â€˜ÃƒÂ£ chÃ¡ÂºÂ¡m tÃ†Â°Ã¡Â»Âng
@@ -929,7 +931,7 @@ export default class RunnerScene extends Phaser.Scene {
                 this.isAttachedToBox = false;
                 this.player.body.setMaxVelocityX(400);
                 this.boxCollider.active = true;
-                this.box.refreshBody();
+                this.box.body.reset(this.box.x, this.boxOrigY);
             }
         } else if (isNearBox) {
             let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
