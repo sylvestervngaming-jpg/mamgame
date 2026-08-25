@@ -520,11 +520,17 @@ export default class RunnerScene extends Phaser.Scene {
         this.boxPrompt = this.add.text(0, 0, '', { font: 'bold 18px Arial', fill: '#00d2d3', backgroundColor: '#1e272e', padding: { x: 10, y: 6 } }).setOrigin(0.5).setAlpha(0).setDepth(200);
         this.boxPrompt.setInteractive({ useHandCursor: true });
         this.boxPrompt.on('pointerdown', () => {
-            if (this.player.body.onFloor()) {
-                this.isAttachedToBox = !this.isAttachedToBox;
-                if (this.isAttachedToBox) {
-                    this.boxSide = (this.box.x > this.player.x) ? 'right' : 'left';
-                }
+            if (this.isAttachedToBox) {
+                // Buông hộp ra
+                this.isAttachedToBox = false;
+                this.player.body.setMaxVelocityX(400);
+                this.boxCollider.active = true;
+                this.box.refreshBody();
+            } else if (this.player.body.onFloor()) {
+                // Cầm hộp vào
+                this.isAttachedToBox = true;
+                this.boxSide = (this.box.x > this.player.x) ? 'right' : 'left';
+                this.boxCollider.active = false;
             }
         });
         this.isAttachedToBox = false;
@@ -900,7 +906,7 @@ export default class RunnerScene extends Phaser.Scene {
             boxTargetX = Phaser.Math.Clamp(boxTargetX, boxMinX, boxMaxX);
 
             this.box.setPosition(boxTargetX, this.boxOrigY);
-            this.box.body.updateFromGameObject();
+            this.box.refreshBody();
             this.boxVisuals.setPosition(boxTargetX, this.boxOrigY);
 
             // Clamp player: khÃƒÂ´ng Ã„â€˜i chÃ¡Â»â€œng lÃƒÂªn hÃ¡Â»â„¢p khi hÃ¡Â»â„¢p Ã„â€˜ÃƒÂ£ chÃ¡ÂºÂ¡m tÃ†Â°Ã¡Â»Âng
@@ -922,7 +928,8 @@ export default class RunnerScene extends Phaser.Scene {
             if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
                 this.isAttachedToBox = false;
                 this.player.body.setMaxVelocityX(400);
-                this.boxCollider.active = true; // BÃ¡ÂºÂ­t lÃ¡ÂºÂ¡i collider Ã„â€˜Ã¡Â»Æ’ nhÃ¡ÂºÂ£y lÃƒÂªn hÃ¡Â»â„¢p
+                this.boxCollider.active = true;
+                this.box.refreshBody();
             }
         } else if (isNearBox) {
             let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);

@@ -748,11 +748,15 @@
       this.boxPrompt = this.add.text(0, 0, "", { font: "bold 18px Arial", fill: "#00d2d3", backgroundColor: "#1e272e", padding: { x: 10, y: 6 } }).setOrigin(0.5).setAlpha(0).setDepth(200);
       this.boxPrompt.setInteractive({ useHandCursor: true });
       this.boxPrompt.on("pointerdown", () => {
-        if (this.player.body.onFloor()) {
-          this.isAttachedToBox = !this.isAttachedToBox;
-          if (this.isAttachedToBox) {
-            this.boxSide = this.box.x > this.player.x ? "right" : "left";
-          }
+        if (this.isAttachedToBox) {
+          this.isAttachedToBox = false;
+          this.player.body.setMaxVelocityX(400);
+          this.boxCollider.active = true;
+          this.box.refreshBody();
+        } else if (this.player.body.onFloor()) {
+          this.isAttachedToBox = true;
+          this.boxSide = this.box.x > this.player.x ? "right" : "left";
+          this.boxCollider.active = false;
         }
       });
       this.isAttachedToBox = false;
@@ -1032,7 +1036,7 @@
         let boxMinX = boxHalfW;
         boxTargetX = Phaser.Math.Clamp(boxTargetX, boxMinX, boxMaxX);
         this.box.setPosition(boxTargetX, this.boxOrigY);
-        this.box.body.updateFromGameObject();
+        this.box.refreshBody();
         this.boxVisuals.setPosition(boxTargetX, this.boxOrigY);
         if (this.boxSide === "right" && this.player.x > boxTargetX - 50) {
           this.player.x = boxTargetX - 50;
@@ -1050,6 +1054,7 @@
           this.isAttachedToBox = false;
           this.player.body.setMaxVelocityX(400);
           this.boxCollider.active = true;
+          this.box.refreshBody();
         }
       } else if (isNearBox) {
         let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
