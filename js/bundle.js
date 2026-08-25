@@ -817,7 +817,7 @@
         this.isGameOvering = true;
         this.cameras.main.fadeOut(1e3, 0, 0, 0);
         this.time.delayedCall(1e3, () => {
-          this.scene.start("GameOverScene", { reason: "M\xC3\xA1\xC2\xBA\xC2\xA7m \xC3\u201E\xE2\u20AC\u02DC\xC3\u0192\xC2\xA3 r\xC3\u2020\xC2\xA1i xu\xC3\xA1\xC2\xBB\xE2\u20AC\u02DCng h\xC3\xA1\xC2\xBB\xE2\u20AC\u02DC n\xC3\u2020\xC2\xB0\xC3\xA1\xC2\xBB\xE2\u20AC\xBAc \xC3\u201E\xE2\u20AC\u02DC\xC3\xA1\xC2\xBB\xE2\u201E\xA2c v\xC3\u0192\xC2\xA0 tan bi\xC3\xA1\xC2\xBA\xC2\xBFn.", retryScene: "RunnerScene" });
+          this.scene.start("GameOverScene", { reason: "M\u1EA7m \u0111\xE3 r\u01A1i xu\u1ED1ng h\u1ED1 n\u01B0\u1EDBc \u0111\u1ED9c v\xE0 tan bi\u1EBFn...", retryScene: "RunnerScene" });
         });
       };
       this.physics.add.overlap(this.player, this.toxicPit, this.triggerGameOver);
@@ -1329,7 +1329,7 @@
       btnYes.on("pointerdown", () => {
         this.cameras.main.fadeOut(1e3, 0, 0, 0);
         this.time.delayedCall(1e3, () => {
-          this.scene.start("GameOverScene", { reason: "M\xC3\xA1\xC2\xBA\xC2\xA7m \xC3\u201E\xE2\u20AC\u02DC\xC3\u0192\xC2\xA3 b\xC3\xA1\xC2\xBB\xE2\u20AC\xB9 n\xC3\u2020\xC2\xB0\xC3\xA1\xC2\xBB\xE2\u20AC\xBAc \xC3\u201E\xE2\u20AC\u02DC\xC3\xA1\xC2\xBB\xE2\u201E\xA2c \xC3\u201E\xC6\u2019n m\xC3\u0192\xC2\xB2n v\xC3\u0192\xC2\xA0 ch\xC3\xA1\xC2\xBA\xC2\xBFt kh\xC3\u0192\xC2\xB4 c\xC3\u0192\xC2\xB9ng qu\xC3\u0192\xC2\xAA h\xC3\u2020\xC2\xB0\xC3\u2020\xC2\xA1ng.", retryScene: "RunnerScene" });
+          this.scene.start("GameOverScene", { reason: "M\u1EA7m \u0111\xE3 b\u1ECB n\u01B0\u1EDBc \u0111\u1ED9c \u0103n m\xF2n v\xE0 ch\u1EBFt c\xF9ng qu\xEA h\u01B0\u01A1ng.", retryScene: "RunnerScene" });
         });
       });
     }
@@ -1763,26 +1763,29 @@
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.cameras.main.setBackgroundColor(this.win ? "#003300" : "#880000");
-      let title = this.win ? "S\u1ED0NG S\xD3T" : "GAME OVER";
-      this.add.text(w / 2, h / 2 - 60, title, {
-        font: "bold 64px Arial",
-        fill: "#ffffff"
+      let title = this.win ? "CHI\u1EBEN TH\u1EAENG" : "GAME OVER";
+      this.add.text(w / 2, h / 2 - 70, title, {
+        font: 'bold 60px "Segoe UI", Arial, sans-serif',
+        fill: "#ffffff",
+        shadow: { offsetX: 0, offsetY: 4, color: "#000000", blur: 10, fill: true }
       }).setOrigin(0.5);
       if (!this.win) {
-        this.add.text(w / 2, h / 2 + 20, this.reason, {
-          font: "28px Arial",
-          fill: "#ffcccc"
+        this.add.text(w / 2, h / 2 + 10, this.reason, {
+          font: 'bold 24px "Segoe UI", Arial, sans-serif',
+          fill: "#ffcccc",
+          align: "center",
+          wordWrap: { width: 800 }
         }).setOrigin(0.5);
       }
-      let btnText = this.win ? "R\u1EDDi \u0111i" : "Th\u1EED l\u1EA1i";
-      let btn = this.add.text(w / 2, h / 2 + 120, btnText, {
-        font: "bold 32px Arial",
-        fill: "#ffff00",
-        backgroundColor: "#000000aa",
-        padding: { x: 30, y: 12 }
+      let btnText = this.win ? "Ti\u1EBFp t\u1EE5c \u2794" : "\u{1F504} Th\u1EED l\u1EA1i";
+      let btn = this.add.text(w / 2, h / 2 + 100, btnText, {
+        font: 'bold 26px "Segoe UI", Arial, sans-serif',
+        fill: "#1e272e",
+        backgroundColor: "#00d2d3",
+        padding: { x: 32, y: 14 }
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      btn.on("pointerover", () => btn.setStyle({ fill: "#00ffcc" }));
-      btn.on("pointerout", () => btn.setStyle({ fill: "#ffff00" }));
+      btn.on("pointerover", () => btn.setStyle({ fill: "#ffffff", backgroundColor: "#10ac84" }));
+      btn.on("pointerout", () => btn.setStyle({ fill: "#1e272e", backgroundColor: "#00d2d3" }));
       btn.on("pointerdown", () => {
         if (this.win) {
           this.scene.start("MapSelectionScene");

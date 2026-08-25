@@ -457,7 +457,7 @@ export default class RunnerScene extends Phaser.Scene {
             this.isGameOvering = true;
             this.cameras.main.fadeOut(1000, 0, 0, 0);
             this.time.delayedCall(1000, () => {
-                this.scene.start('GameOverScene', { reason: 'MÃ¡ÂºÂ§m Ã„â€˜ÃƒÂ£ rÃ†Â¡i xuÃ¡Â»â€˜ng hÃ¡Â»â€˜ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c vÃƒÂ  tan biÃ¡ÂºÂ¿n.', retryScene: 'RunnerScene' });
+                this.scene.start('GameOverScene', { reason: 'Mầm đã rơi xuống hố nước độc và tan biến...', retryScene: 'RunnerScene' });
             });
         };
         this.physics.add.overlap(this.player, this.toxicPit, this.triggerGameOver);
@@ -1119,7 +1119,7 @@ export default class RunnerScene extends Phaser.Scene {
         btnYes.on('pointerdown', () => {
             this.cameras.main.fadeOut(1000, 0, 0, 0);
             this.time.delayedCall(1000, () => {
-                this.scene.start('GameOverScene', { reason: 'MÃ¡ÂºÂ§m Ã„â€˜ÃƒÂ£ bÃ¡Â»â€¹ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c Ã„Æ’n mÃƒÂ²n vÃƒÂ  chÃ¡ÂºÂ¿t khÃƒÂ´ cÃƒÂ¹ng quÃƒÂª hÃ†Â°Ã†Â¡ng.', retryScene: 'RunnerScene' });
+                this.scene.start('GameOverScene', { reason: 'Mầm đã bị nước độc ăn mòn và chết cùng quê hương.', retryScene: 'RunnerScene' });
             });
         });
     }
