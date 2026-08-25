@@ -633,7 +633,7 @@ export default class RunnerScene extends Phaser.Scene {
         // BÃ¡Â»Æ’ nÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»â„¢c khÃ¡Â»â€¢ng lÃ¡Â»â€œ Ã¡Â»Å¸ Ã„â€˜ÃƒÂ¡y vÃ¡Â»Â±c (bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u tÃ¡Â»Â« x=7250, nÃ†Â¡i dÃ¡Â»â€˜c chÃ¡ÂºÂ¡m mÃ¡ÂºÂ·t nÃ†Â°Ã¡Â»â€ºc)
         // DÃ¡Â»â€˜c tÃ¡Â»Â« h-110 xuÃ¡Â»â€˜ng tÃ¡ÂºÂ­n h+890. MÃ¡ÂºÂ·t nÃ†Â°Ã¡Â»â€ºc Ã¡Â»Å¸ mÃ¡Â»Â©c h+800.
         this.toxicWater = this.add.rectangle(7250, h + 800, 2000, 1500, 0x000000, 0).setOrigin(0, 0); this.physics.add.existing(this.toxicWater, true); let endLake = this.add.container(6500, h + 800).setDepth(3);
-        let el1 = this.add.rectangle(0, -70, 3000, 1500, 0x1a0022, 0.95).setOrigin(0, 0); // Ã„ÂÃƒÂ¡y nÃ†Â°Ã¡Â»â€ºc khÃ¡Â»â€¢ng lÃ¡Â»â€œ
+        let el1 = this.add.rectangle(0, -70, 3000, 1500, 0x1a0022, 0.95).setOrigin(0, 0); // Ã„Â ÃƒÂ¡y nÃ†Â°Ã¡Â»â€ºc khÃ¡Â»â€¢ng lÃ¡Â»â€œ
         let el2 = this.add.rectangle(0, -85, 3000, 30, 0x33004d, 0.7).setOrigin(0, 0);   // Giao thoa
         
         
@@ -641,8 +641,6 @@ export default class RunnerScene extends Phaser.Scene {
             g.fillStyle(0x8800aa, 0.4);
             g.fillRect(0, 0, 3000, 18);
         });
-        let elG = this.add.image(0, -100, 'end_lake_surface').setOrigin(0,0); // MÃ¡ÂºÂ·t nÃ†Â°Ã¡Â»â€ºc nhÃ¡ÂºÂ¥p nhÃƒÂ´ (mÃƒÂ u tÃƒÂ­m)
-        endLake.add([el1, el2, elG]);
         
         // ThÃƒÂªm vÃƒÂ i hÃ¡ÂºÂ¡t bÃ¡Â»Â¥i mÃ¡Â»Â (fog/dust) bay Ã¡Â»Å¸ tiÃ¡Â»Ân cÃ¡ÂºÂ£nh
         this.add.particles(0, 0, 'smoke', {
@@ -734,11 +732,11 @@ export default class RunnerScene extends Phaser.Scene {
             // QuÃƒÂ¡n tÃƒÂ­nh bÃ¡ÂºÂ­t tÃ†Â°Ã¡Â»Âng sÃ¡ÂºÂ½ tÃ¡Â»Â± Ã„â€˜Ã¡Â»â„¢ng Ã„â€˜Ã¡ÂºÂ©y ngÃ†Â°Ã¡Â»Âi chÃ†Â¡i Ã„â€˜Ã¡ÂºÂ­p vÃƒÂ o mÃ¡ÂºÂ·t tÃ†Â°Ã¡Â»Âng Ã„â€˜Ã¡Â»â€˜i diÃ¡Â»â€¡n
         } else {
             // ChÃ¡ÂºÂ¿ Ã„â€˜Ã¡Â»â„¢ di chuyÃ¡Â»Æ’n bÃƒÂ¬nh thÃ†Â°Ã¡Â»Âng
-            if (this.cursors.left.isDown || this.keyA.isDown) {
+            if (isMovingLeft) {
                 this.player.body.setVelocityX(-350);
                 isMoving = true;
                 this.playerSprite.setFlipX(true);
-            } else if (this.cursors.right.isDown || this.keyD.isDown) {
+            } else if (isMovingRight) {
                 this.player.body.setVelocityX(350);
                 isMoving = true;
                 this.playerSprite.setFlipX(false);

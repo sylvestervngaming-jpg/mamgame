@@ -827,8 +827,6 @@
         g.fillStyle(8913066, 0.4);
         g.fillRect(0, 0, 3e3, 18);
       });
-      let elG = this.add.image(0, -100, "end_lake_surface").setOrigin(0, 0);
-      endLake.add([el1, el2, elG]);
       this.add.particles(0, 0, "smoke", {
         x: { min: 0, max: w * 6 },
         y: { min: 0, max: h },
@@ -860,8 +858,6 @@
       let isGrounded = this.player.body.touching.down;
       let isMoving = false;
       let isJumping = false;
-      let touch = this.registry.get("touchControls");
-      let isTouchJump = touch && touch.isJump;
       let isJumpPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey) || Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keyW) || isTouchJump;
       let isSpacePressed = isJumpPressed;
       let inWallJumpZone = this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150;
@@ -891,11 +887,11 @@
       }
       if (inWallJumpZone && !isGrounded && this.player.y > topOfTower) {
       } else {
-        if (this.cursors.left.isDown || this.keyA.isDown) {
+        if (isMovingLeft) {
           this.player.body.setVelocityX(-350);
           isMoving = true;
           this.playerSprite.setFlipX(true);
-        } else if (this.cursors.right.isDown || this.keyD.isDown) {
+        } else if (isMovingRight) {
           this.player.body.setVelocityX(350);
           isMoving = true;
           this.playerSprite.setFlipX(false);
@@ -2411,7 +2407,7 @@
       let touch = this.scene.registry.get("touchControls");
       let isTouchLeft = touch && touch.isLeft;
       let isTouchRight = touch && touch.isRight;
-      let isTouchJump = touch && touch.isJump;
+      let isTouchJump2 = touch && touch.isJump;
       let isLeft = cursors && cursors.left && cursors.left.isDown || this.scene.keyA && this.scene.keyA.isDown || isTouchLeft;
       let isRight = cursors && cursors.right && cursors.right.isDown || this.scene.keyD && this.scene.keyD.isDown || isTouchRight;
       if (isLeft) {
@@ -2426,7 +2422,7 @@
       let isW = this.scene.keyW && this.scene.keyW.isDown;
       let isUp = cursors && cursors.up && cursors.up.isDown;
       let isSpace = spaceKey && spaceKey.isDown;
-      let isJumpPressed = isW || isUp || isSpace || isTouchJump;
+      let isJumpPressed = isW || isUp || isSpace || isTouchJump2;
       if (isJumpPressed && isGrounded) {
         this.hitbox.body.setVelocityY(-600);
       }
