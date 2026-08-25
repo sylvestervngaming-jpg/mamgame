@@ -686,8 +686,7 @@ export default class RunnerScene extends Phaser.Scene {
         let isMoving = false;
         let isJumping = false;
 
-        let touch = this.registry.get('touchControls');
-        let isTouchJump = (touch && touch.isJump);
+        
         let isJumpPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey) || 
                              Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
                              Phaser.Input.Keyboard.JustDown(this.keyW) || 
