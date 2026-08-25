@@ -30,12 +30,12 @@ export default class UIScene extends Phaser.Scene {
         this.registry.set('touchControls', this.touchControls);
 
                 // --- NÚT TOÀN MÀN HÌNH (FULLSCREEN) TRÊN GÓC HUD ---
-        this.fsBtnBg = this.add.rectangle(w - 85, 38, 44, 40, 0x1e272e, 0.85)
+        this.fsBtnBg = this.add.rectangle(w - 95, 65, 44, 40, 0x1e272e, 0.85)
             .setStrokeStyle(2, 0x00d2d3)
             .setScrollFactor(0).setDepth(2500)
             .setInteractive({ useHandCursor: true });
 
-        this.fsBtnText = this.add.text(w - 85, 38, '⛶', {
+        this.fsBtnText = this.add.text(w - 95, 65, '⛶', {
             font: 'bold 20px Arial',
             fill: '#00d2d3'
         }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
@@ -53,12 +53,12 @@ export default class UIScene extends Phaser.Scene {
         });
 
         // --- NÚT TẠM DỪNG (PAUSE) CẢM ỨNG TRÊN GÓC HUD ---
-        this.pauseBtnBg = this.add.rectangle(w - 35, 38, 44, 40, 0x1e272e, 0.85)
+        this.pauseBtnBg = this.add.rectangle(w - 45, 65, 44, 40, 0x1e272e, 0.85)
             .setStrokeStyle(2, 0x00d2d3)
             .setScrollFactor(0).setDepth(2500)
             .setInteractive({ useHandCursor: true });
 
-        this.pauseBtnText = this.add.text(w - 35, 38, '⏸', {
+        this.pauseBtnText = this.add.text(w - 45, 65, '⏸', {
             font: 'bold 18px Arial',
             fill: '#00d2d3'
         }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
@@ -76,12 +76,12 @@ export default class UIScene extends Phaser.Scene {
         });
 
         // --- NÚT BALO / TÚI ĐỒ TRÊN HUD ---
-        this.bagBtnBg = this.add.rectangle(85, 38, 120, 40, 0x1e272e, 0.85)
+        this.bagBtnBg = this.add.rectangle(85, 65, 120, 40, 0x1e272e, 0.85)
             .setStrokeStyle(2, 0x00d2d3)
             .setScrollFactor(0).setDepth(2500)
             .setInteractive({ useHandCursor: true });
 
-        this.bagBtnText = this.add.text(85, 38, '🎒 Túi Đồ [B]', {
+        this.bagBtnText = this.add.text(85, 65, '🎒 Túi Đồ [B]', {
             font: 'bold 14px Arial',
             fill: '#00d2d3'
         }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);

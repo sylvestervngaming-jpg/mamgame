@@ -754,14 +754,14 @@ export default class RunnerScene extends Phaser.Scene {
             let slope = this.getTerrainSlope(pX);
             
             // NÃ¡ÂºÂ¿u Ã„â€˜i lÃƒÂªn dÃ¡Â»â€˜c, giÃ¡ÂºÂ£m tÃ¡Â»â€˜c Ã„â€˜Ã¡Â»â„¢
-            if (slope < -0.1 && this.cursors.right.isDown) {
+            if (slope < -0.1 && isMovingRight) {
                 this.player.body.velocity.x *= 0.5; // DÃ¡Â»â€˜c lÃƒÂªn bÃƒÂªn phÃ¡ÂºÂ£i
-            } else if (slope > 0.1 && this.cursors.left.isDown) {
+            } else if (slope > 0.1 && isMovingLeft) {
                 this.player.body.velocity.x *= 0.5; // DÃ¡Â»â€˜c lÃƒÂªn bÃƒÂªn trÃƒÂ¡i
             }
             
             // NÃ¡ÂºÂ¿u khÃƒÂ´ng bÃ¡ÂºÂ¥m nÃƒÂºt di chuyÃ¡Â»Æ’n mÃƒÂ  Ã„â€˜Ã¡Â»Â©ng trÃƒÂªn dÃ¡Â»â€˜c thÃƒÂ¬ trÃ†Â°Ã¡Â»Â£t xuÃ¡Â»â€˜ng
-            if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.keyA.isDown && !this.keyD.isDown) {
+            if (!isMovingLeft && !isMovingRight) {
                 if (slope > 0.1) {
                     this.player.body.velocity.x += slope * 15; // TrÃ†Â°Ã¡Â»Â£t phÃ¡ÂºÂ£i
                 } else if (slope < -0.1) {
@@ -769,9 +769,9 @@ export default class RunnerScene extends Phaser.Scene {
                 }
             } else {
                 // NÃ¡ÂºÂ¿u Ã„â€˜i xuÃ¡Â»â€˜ng dÃ¡Â»â€˜c, Ã„â€˜i nhanh hÃ†Â¡n chÃƒÂºt
-                if (slope > 0.1 && this.cursors.right.isDown) {
+                if (slope > 0.1 && isMovingRight) {
                     this.player.body.velocity.x += 100;
-                } else if (slope < -0.1 && this.cursors.left.isDown) {
+                } else if (slope < -0.1 && isMovingLeft) {
                     this.player.body.velocity.x -= 100;
                 }
             }

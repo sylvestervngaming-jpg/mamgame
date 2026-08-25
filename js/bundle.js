@@ -905,21 +905,21 @@
       }
       if (isGrounded) {
         let slope = this.getTerrainSlope(pX);
-        if (slope < -0.1 && this.cursors.right.isDown) {
+        if (slope < -0.1 && isMovingRight) {
           this.player.body.velocity.x *= 0.5;
-        } else if (slope > 0.1 && this.cursors.left.isDown) {
+        } else if (slope > 0.1 && isMovingLeft) {
           this.player.body.velocity.x *= 0.5;
         }
-        if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.keyA.isDown && !this.keyD.isDown) {
+        if (!isMovingLeft && !isMovingRight) {
           if (slope > 0.1) {
             this.player.body.velocity.x += slope * 15;
           } else if (slope < -0.1) {
             this.player.body.velocity.x += slope * 15;
           }
         } else {
-          if (slope > 0.1 && this.cursors.right.isDown) {
+          if (slope > 0.1 && isMovingRight) {
             this.player.body.velocity.x += 100;
-          } else if (slope < -0.1 && this.cursors.left.isDown) {
+          } else if (slope < -0.1 && isMovingLeft) {
             this.player.body.velocity.x -= 100;
           }
         }
@@ -1975,8 +1975,8 @@
       this.inventoryPopup = new InventoryPopup(this);
       this.touchControls = new TouchControls(this);
       this.registry.set("touchControls", this.touchControls);
-      this.fsBtnBg = this.add.rectangle(w - 85, 38, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
-      this.fsBtnText = this.add.text(w - 85, 38, "\u26F6", {
+      this.fsBtnBg = this.add.rectangle(w - 95, 65, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
+      this.fsBtnText = this.add.text(w - 95, 65, "\u26F6", {
         font: "bold 20px Arial",
         fill: "#00d2d3"
       }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
@@ -1991,8 +1991,8 @@
       this.fsBtnBg.on("pointerdown", () => {
         this.toggleFullscreen();
       });
-      this.pauseBtnBg = this.add.rectangle(w - 35, 38, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
-      this.pauseBtnText = this.add.text(w - 35, 38, "\u23F8", {
+      this.pauseBtnBg = this.add.rectangle(w - 45, 65, 44, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
+      this.pauseBtnText = this.add.text(w - 45, 65, "\u23F8", {
         font: "bold 18px Arial",
         fill: "#00d2d3"
       }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
@@ -2007,8 +2007,8 @@
       this.pauseBtnBg.on("pointerdown", () => {
         this.triggerPause();
       });
-      this.bagBtnBg = this.add.rectangle(85, 38, 120, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
-      this.bagBtnText = this.add.text(85, 38, "\u{1F392} T\xFAi \u0110\u1ED3 [B]", {
+      this.bagBtnBg = this.add.rectangle(85, 65, 120, 40, 1976110, 0.85).setStrokeStyle(2, 53971).setScrollFactor(0).setDepth(2500).setInteractive({ useHandCursor: true });
+      this.bagBtnText = this.add.text(85, 65, "\u{1F392} T\xFAi \u0110\u1ED3 [B]", {
         font: "bold 14px Arial",
         fill: "#00d2d3"
       }).setOrigin(0.5).setScrollFactor(0).setDepth(2501);
