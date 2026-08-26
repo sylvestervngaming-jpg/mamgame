@@ -278,6 +278,7 @@
       this.curBackCloakRot = 0;
       this.curHeadY = this.baseHeadY;
       this.curSproutRot = 0;
+      this.curBodyRot = 0;
       this.facingRight = true;
       this.wasGrounded = true;
       this.landSquash = 1;
@@ -286,10 +287,12 @@
       this.facingRight = !flip;
       this.setScale(flip ? -1 : 1, 1);
     }
-    updateAnimation(time, vx, vy, isGrounded) {
+    updateAnimation(time, vx, vy, isGrounded, isPushingBox = false, inWallZone = false, wallSide = null) {
       let isMoving = Math.abs(vx) > 15;
-      if (vx > 15) this.facingRight = true;
-      else if (vx < -15) this.facingRight = false;
+      if (!isPushingBox) {
+        if (vx > 15) this.facingRight = true;
+        else if (vx < -15) this.facingRight = false;
+      }
       this.setScale(this.facingRight ? 1 : -1, 1);
       if (!this.wasGrounded && isGrounded && vy >= 0) {
         this.landSquash = 0.78;
@@ -310,7 +313,51 @@
       let targetBackCloakRot = 0;
       let targetHeadY = this.baseHeadY;
       let targetSproutRot = 0;
-      if (!isGrounded) {
+      let targetBodyRot = 0;
+      if (isPushingBox) {
+        let pushCycle = time * 0.01;
+        targetBodyRot = this.facingRight ? 0.26 : -0.26;
+        targetLeftCloakRot = -0.42;
+        targetRightCloakRot = -0.36;
+        targetBackCloakRot = 0.15;
+        let legPush = Math.sin(pushCycle);
+        targetLegLeftRot = legPush * 0.85;
+        targetLegRightRot = -legPush * 0.85;
+        targetLegLeftY = this.baseLegLeftY - Math.max(0, legPush * 6);
+        targetLegRightY = this.baseLegRightY - Math.max(0, -legPush * 6);
+        targetHeadY = this.baseHeadY + 3.5;
+        targetSproutRot = -0.32;
+      } else if (inWallZone && !isGrounded) {
+        let isKickingLeftWall = wallSide === "left" || vx > 50;
+        let isKickingRightWall = wallSide === "right" || vx < -50;
+        if (isKickingLeftWall) {
+          targetLegLeftRot = 0.68;
+          targetLegRightRot = -0.55;
+          targetLegLeftY = this.baseLegLeftY;
+          targetLegRightY = this.baseLegRightY - 7;
+          targetLeftCloakRot = 0.35;
+          targetRightCloakRot = -0.35;
+          targetSproutRot = -0.25;
+          targetBodyRot = 0.18;
+          targetHeadY = this.baseHeadY - 2;
+        } else if (isKickingRightWall) {
+          targetLegRightRot = 0.68;
+          targetLegLeftRot = -0.55;
+          targetLegRightY = this.baseLegRightY;
+          targetLegLeftY = this.baseLegLeftY - 7;
+          targetLeftCloakRot = 0.35;
+          targetRightCloakRot = -0.35;
+          targetSproutRot = 0.25;
+          targetBodyRot = -0.18;
+          targetHeadY = this.baseHeadY - 2;
+        } else {
+          targetLegLeftRot = -0.3;
+          targetLegRightRot = -0.3;
+          targetLeftCloakRot = 0.2;
+          targetRightCloakRot = -0.2;
+          targetBodyRot = 0;
+        }
+      } else if (!isGrounded) {
         if (vy < -100) {
           targetLegLeftRot = -0.45;
           targetLegRightRot = -0.35;
@@ -374,11 +421,13 @@
       this.curLegRightRot = Phaser.Math.Linear(this.curLegRightRot, targetLegRightRot, lerpSpeed);
       this.curLegLeftY = Phaser.Math.Linear(this.curLegLeftY, targetLegLeftY, lerpSpeed);
       this.curLegRightY = Phaser.Math.Linear(this.curLegRightY, targetLegRightY, lerpSpeed);
-      this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.15);
-      this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.15);
-      this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.15);
+      this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.16);
+      this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.16);
+      this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.16);
       this.curHeadY = Phaser.Math.Linear(this.curHeadY, targetHeadY, lerpSpeed);
-      this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.15);
+      this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.16);
+      this.curBodyRot = Phaser.Math.Linear(this.curBodyRot, targetBodyRot, 0.18);
+      this.setRotation(this.curBodyRot);
       this.legLeft.setRotation(this.curLegLeftRot);
       this.legRight.setRotation(this.curLegRightRot);
       this.legLeft.y = this.curLegLeftY;
@@ -1160,7 +1209,9 @@
         this.playerPuppet.x = Math.round(this.player.x);
         this.playerPuppet.y = Math.round(this.player.y + 40);
         let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
-        this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
+        let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
+        let inWall = this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150;
+        this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow, isPushing, inWall, this.lastWallJump);
       }
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);

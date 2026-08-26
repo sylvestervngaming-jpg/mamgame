@@ -663,7 +663,9 @@ export default class RunnerScene extends Phaser.Scene {
             this.playerPuppet.x = Math.round(this.player.x);
             this.playerPuppet.y = Math.round(this.player.y + 40);
             let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
-            this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
+            let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
+            let inWall = (this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150);
+            this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow, isPushing, inWall, this.lastWallJump);
         }
 
         // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---

@@ -4,7 +4,7 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.setDepth(10);
 
-        // 1. Layer Áo choàng sau (Back Cloak) - Lớp lót dưới cùng
+        // 1. Layer Áo choàng sau (Back Cloak)
         this.backCloak = scene.add.image(-0.1, -40.7, 'mam_part_back_cloak')
             .setOrigin(0.5, 0.5)
             .setDisplaySize(51.7, 61.9);
@@ -22,7 +22,7 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
             .setDisplaySize(5.7, 31.7);
         this.baseLegRightY = -31.7;
 
-        // 4. Đầu và Khuôn mặt (Head & Face) - Sắc nét HD
+        // 4. Đầu và Khuôn mặt (Head & Face)
         this.head = scene.add.image(4.6, -82.0, 'mam_part_head_face')
             .setOrigin(0.5, 0.5)
             .setDisplaySize(23.4, 27.9);
@@ -67,6 +67,7 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         
         this.curHeadY = this.baseHeadY;
         this.curSproutRot = 0;
+        this.curBodyRot = 0;
 
         this.facingRight = true;
         this.wasGrounded = true;
@@ -78,15 +79,17 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.setScale(flip ? -1 : 1, 1);
     }
 
-    updateAnimation(time, vx, vy, isGrounded) {
+    updateAnimation(time, vx, vy, isGrounded, isPushingBox = false, inWallZone = false, wallSide = null) {
         let isMoving = Math.abs(vx) > 15;
 
-        if (vx > 15) this.facingRight = true;
-        else if (vx < -15) this.facingRight = false;
+        if (!isPushingBox) {
+            if (vx > 15) this.facingRight = true;
+            else if (vx < -15) this.facingRight = false;
+        }
 
         this.setScale(this.facingRight ? 1 : -1, 1);
 
-        // Hiệu ứng tiếp đất nhún nảy đàn hồi (Landing Impact)
+        // Hiệu ứng tiếp đất đàn hồi
         if (!this.wasGrounded && isGrounded && vy >= 0) {
             this.landSquash = 0.78;
             this.scene.tweens.add({
@@ -110,13 +113,81 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
 
         let targetHeadY = this.baseHeadY;
         let targetSproutRot = 0;
+        let targetBodyRot = 0;
 
-        if (!isGrounded) {
+        if (isPushingBox) {
             // ==========================================
-            // 🦘 TRẠNG THÁI NHẢY & RƠI TỰ DO (JUMP / FALL)
+            // 📦 ANIMATION ĐẨY HỘP GỖ NẶNG NỀ (PUSH BOX)
+            // ==========================================
+            let pushCycle = time * 0.010;
+
+            // Thân người chúi nghiêng mạnh tì vào hộp
+            targetBodyRot = this.facingRight ? 0.26 : -0.26;
+
+            // Hai vạt áo vươn ra trước như 2 cánh tay tì đẩy hộp
+            targetLeftCloakRot = -0.42;
+            targetRightCloakRot = -0.36;
+            targetBackCloakRot = 0.15;
+
+            // Chân bước ghìm lực sải dài đạp gót mạnh
+            let legPush = Math.sin(pushCycle);
+            targetLegLeftRot = legPush * 0.85;
+            targetLegRightRot = -legPush * 0.85;
+            targetLegLeftY = this.baseLegLeftY - Math.max(0, legPush * 6.0);
+            targetLegRightY = this.baseLegRightY - Math.max(0, -legPush * 6.0);
+
+            // Đầu gồng mình chúi xuống, đọt mầm cụp trĩu về sau
+            targetHeadY = this.baseHeadY + 3.5;
+            targetSproutRot = -0.32;
+
+        } else if (inWallZone && !isGrounded) {
+            // ==========================================
+            // 🧗 ANIMATION NHẢY & BÁM TƯỜNG LIÊN TỤC (WALL JUMP)
+            // ==========================================
+            let isKickingLeftWall = (wallSide === 'left' || vx > 50);
+            let isKickingRightWall = (wallSide === 'right' || vx < -50);
+
+            if (isKickingLeftWall) {
+                // Đạp tường trái bật sang phải: Chân trái duỗi đạp tường, chân phải co vung sang
+                targetLegLeftRot = 0.68;
+                targetLegRightRot = -0.55;
+                targetLegLeftY = this.baseLegLeftY;
+                targetLegRightY = this.baseLegRightY - 7;
+
+                targetLeftCloakRot = 0.35;
+                targetRightCloakRot = -0.35;
+                targetSproutRot = -0.25;
+                targetBodyRot = 0.18;
+                targetHeadY = this.baseHeadY - 2;
+
+            } else if (isKickingRightWall) {
+                // Đạp tường phải bật sang trái: Chân phải duỗi đạp tường, chân trái co vung sang
+                targetLegRightRot = 0.68;
+                targetLegLeftRot = -0.55;
+                targetLegRightY = this.baseLegRightY;
+                targetLegLeftY = this.baseLegLeftY - 7;
+
+                targetLeftCloakRot = 0.35;
+                targetRightCloakRot = -0.35;
+                targetSproutRot = 0.25;
+                targetBodyRot = -0.18;
+                targetHeadY = this.baseHeadY - 2;
+
+            } else {
+                // Trượt dọc khe tường (Wall slide)
+                targetLegLeftRot = -0.3;
+                targetLegRightRot = -0.3;
+                targetLeftCloakRot = 0.2;
+                targetRightCloakRot = -0.2;
+                targetBodyRot = 0;
+            }
+
+        } else if (!isGrounded) {
+            // ==========================================
+            // 🦘 TRẠNG THÁI NHẢY THƯỜNG (JUMP / FALL)
             // ==========================================
             if (vy < -100) {
-                // Bật nhảy lên cao: Hai chân gập co nhẹ, tà áo xuôi theo luồng gió
+                // Bật nhảy lên cao
                 targetLegLeftRot = -0.45;
                 targetLegRightRot = -0.35;
                 targetLegLeftY = this.baseLegLeftY - 6;
@@ -124,12 +195,11 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
 
                 targetLeftCloakRot = 0.16;
                 targetRightCloakRot = -0.16;
-
                 targetSproutRot = -0.22;
                 targetHeadY = this.baseHeadY - 2;
 
             } else if (vy >= -100 && vy <= 100) {
-                // Lơ lửng tại đỉnh nhảy: Tà áo bay êm ái
+                // Lơ lửng đỉnh nhảy
                 let floatWave = Math.sin(time * 0.007) * 0.05;
                 targetLegLeftRot = -0.12;
                 targetLegRightRot = -0.08;
@@ -142,7 +212,7 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
                 targetHeadY = this.baseHeadY;
 
             } else {
-                // Rơi tự do: Áo choàng xòe nhẹ đón gió, chân duỗi thẳng
+                // Rơi tự do
                 targetLegLeftRot = 0.12;
                 targetLegRightRot = 0.15;
                 targetLegLeftY = this.baseLegLeftY;
@@ -159,11 +229,10 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
 
         } else if (isMoving) {
             // ==========================================
-            // 🏃 TRẠNG THÁI CHẠY BỘ (TÀ ÁO BAY ÊM ÁI TỰ NHIÊN)
+            // 🏃 TRẠNG THÁI CHẠY BỘ (RUNNING)
             // ==========================================
             let runCycle = time * 0.014;
 
-            // 1. Hai chân bước sải so le có nhấc gối
             let legSwing = Math.sin(runCycle);
             targetLegLeftRot = legSwing * 0.60;
             targetLegRightRot = -legSwing * 0.60;
@@ -171,23 +240,18 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
             targetLegLeftY = this.baseLegLeftY - Math.max(0, legSwing * 5.0);
             targetLegRightY = this.baseLegRightY - Math.max(0, -legSwing * 5.0);
 
-            // 2. Vạt áo choàng hé mở tự nhiên và bay lượn êm ái ra phía sau
-            // Vạt áo mở nhẹ để lộ chân bước, bay mềm mại theo luồng gió
             let cloakWave = Math.sin(runCycle - 0.5) * 0.09 + Math.sin(time * 0.006) * 0.03;
             targetLeftCloakRot = -0.10 + cloakWave;
             targetRightCloakRot = -0.06 - cloakWave * 0.8;
             targetBackCloakRot = Math.sin(runCycle - 0.3) * 0.06;
 
-            // 3. Trọng tâm cơ thể và đầu nhấp nhô theo bước chạy
             let stepBounce = Math.abs(Math.sin(runCycle)) * 2.2;
             targetHeadY = this.baseHeadY + stepBounce;
-
-            // 4. Đọt mầm xoăn đung đưa mềm mại
             targetSproutRot = -0.15 + Math.sin(runCycle - 0.8) * 0.10;
 
         } else {
             // ==========================================
-            // 🌿 TRẠNG THÁI ĐỨNG YÊN (IDLE - THỞ NHẸ DỊU)
+            // 🌿 TRẠNG THÁI ĐỨNG YÊN (IDLE)
             // ==========================================
             let breath = Math.sin(time * 0.003);
             let wind = Math.sin(time * 0.0016);
@@ -214,14 +278,16 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.curLegLeftY = Phaser.Math.Linear(this.curLegLeftY, targetLegLeftY, lerpSpeed);
         this.curLegRightY = Phaser.Math.Linear(this.curLegRightY, targetLegRightY, lerpSpeed);
 
-        this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.15);
-        this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.15);
-        this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.15);
+        this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.16);
+        this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.16);
+        this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.16);
 
         this.curHeadY = Phaser.Math.Linear(this.curHeadY, targetHeadY, lerpSpeed);
-        this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.15);
+        this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.16);
+        this.curBodyRot = Phaser.Math.Linear(this.curBodyRot, targetBodyRot, 0.18);
 
         // Áp dụng lên từng layer
+        this.setRotation(this.curBodyRot);
         this.legLeft.setRotation(this.curLegLeftRot);
         this.legRight.setRotation(this.curLegRightRot);
         this.legLeft.y = this.curLegLeftY;
