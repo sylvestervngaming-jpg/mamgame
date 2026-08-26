@@ -8,6 +8,12 @@ export default class BootScene extends Phaser.Scene {
     preload() {
         this.add.text(640, 360, 'Đang tải...', { font: '32px Arial', fill: '#ffffff' }).setOrigin(0.5, 0.5);
         AssetManager.preloadAll(this);
+
+        const parts = ['back_cloak', 'leg_left', 'leg_right', 'sprout_top', 'head_face', 'left_cloak', 'right_cloak'];
+        parts.forEach(p => {
+            this.load.image('mam_part_' + p, 'assets/sprites/mam_parts/' + p + '.png');
+        });
+
         
         // Nạp các Sprite Sheet hoạt ảnh của Mầm
         this.load.spritesheet('mam_idle_sheet', 'assets/sprites/mam_anim_idle.png', { frameWidth: 96, frameHeight: 128 });

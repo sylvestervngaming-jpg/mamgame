@@ -11,7 +11,14 @@ export default class AssetManager {
             { key: 'bg', file: 'assets/sprites/bg.jpg' },
             { key: 'ground', file: 'assets/sprites/ground.jpg' },
             { key: 'sprout', file: 'assets/sprites/sprout.png' },
-            { key: 'mam_idle', file: 'assets/sprites/mam_idle.png' }
+            { key: 'mam_idle', file: 'assets/sprites/mam_idle.png' },
+            { key: 'mam_part_back_cloak', file: 'assets/sprites/mam_parts/back_cloak.png' },
+            { key: 'mam_part_leg_left', file: 'assets/sprites/mam_parts/leg_left.png' },
+            { key: 'mam_part_leg_right', file: 'assets/sprites/mam_parts/leg_right.png' },
+            { key: 'mam_part_sprout_top', file: 'assets/sprites/mam_parts/sprout_top.png' },
+            { key: 'mam_part_head_face', file: 'assets/sprites/mam_parts/head_face.png' },
+            { key: 'mam_part_left_cloak', file: 'assets/sprites/mam_parts/left_cloak.png' },
+            { key: 'mam_part_right_cloak', file: 'assets/sprites/mam_parts/right_cloak.png' }
         ];
 
         coreAssets.forEach(item => {

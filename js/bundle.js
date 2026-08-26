@@ -8,7 +8,14 @@
         { key: "bg", file: "assets/sprites/bg.jpg" },
         { key: "ground", file: "assets/sprites/ground.jpg" },
         { key: "sprout", file: "assets/sprites/sprout.png" },
-        { key: "mam_idle", file: "assets/sprites/mam_idle.png" }
+        { key: "mam_idle", file: "assets/sprites/mam_idle.png" },
+        { key: "mam_part_back_cloak", file: "assets/sprites/mam_parts/back_cloak.png" },
+        { key: "mam_part_leg_left", file: "assets/sprites/mam_parts/leg_left.png" },
+        { key: "mam_part_leg_right", file: "assets/sprites/mam_parts/leg_right.png" },
+        { key: "mam_part_sprout_top", file: "assets/sprites/mam_parts/sprout_top.png" },
+        { key: "mam_part_head_face", file: "assets/sprites/mam_parts/head_face.png" },
+        { key: "mam_part_left_cloak", file: "assets/sprites/mam_parts/left_cloak.png" },
+        { key: "mam_part_right_cloak", file: "assets/sprites/mam_parts/right_cloak.png" }
       ];
       coreAssets.forEach((item) => {
         if (!scene.textures.exists(item.key)) {
@@ -81,6 +88,10 @@
     preload() {
       this.add.text(640, 360, "\u0110ang t\u1EA3i...", { font: "32px Arial", fill: "#ffffff" }).setOrigin(0.5, 0.5);
       AssetManager.preloadAll(this);
+      const parts = ["back_cloak", "leg_left", "leg_right", "sprout_top", "head_face", "left_cloak", "right_cloak"];
+      parts.forEach((p) => {
+        this.load.image("mam_part_" + p, "assets/sprites/mam_parts/" + p + ".png");
+      });
       this.load.spritesheet("mam_idle_sheet", "assets/sprites/mam_anim_idle.png", { frameWidth: 96, frameHeight: 128 });
       this.load.spritesheet("mam_run_sheet", "assets/sprites/mam_anim_run.png", { frameWidth: 96, frameHeight: 128 });
       this.load.spritesheet("mam_jump_sheet", "assets/sprites/mam_anim_jump.png", { frameWidth: 96, frameHeight: 128 });
@@ -228,6 +239,85 @@
         duration: 1e3,
         onComplete: () => err.destroy()
       });
+    }
+  };
+
+  // src/entities/MamPuppet.js
+  var MamPuppet = class extends Phaser.GameObjects.Container {
+    constructor(scene, x, y) {
+      super(scene, x, y);
+      this.scene = scene;
+      this.setDepth(10);
+      this.backCloak = scene.add.image(0, -41, "mam_part_back_cloak").setOrigin(0.5, 0.5);
+      this.legLeft = scene.add.image(2.5, -32.5, "mam_part_leg_left").setOrigin(0.5, 0);
+      this.baseLegLeftY = -32.5;
+      this.legRight = scene.add.image(10.3, -31.7, "mam_part_leg_right").setOrigin(0.5, 0);
+      this.baseLegRightY = -31.7;
+      this.head = scene.add.image(4.6, -82, "mam_part_head_face").setOrigin(0.5, 0.5);
+      this.baseHeadY = -82;
+      this.sprout = scene.add.image(9.6, -93.8, "mam_part_sprout_top").setOrigin(0.5, 1);
+      this.leftCloak = scene.add.image(-8.5, -71.8, "mam_part_left_cloak").setOrigin(0.5, 0);
+      this.rightCloak = scene.add.image(15.6, -69.7, "mam_part_right_cloak").setOrigin(0.5, 0);
+      this.add([
+        this.backCloak,
+        this.legLeft,
+        this.legRight,
+        this.head,
+        this.sprout,
+        this.leftCloak,
+        this.rightCloak
+      ]);
+      scene.add.existing(this);
+      this.squashY = 1;
+      this.facingRight = true;
+    }
+    updateAnimation(time, vx, vy, isGrounded) {
+      let isMoving = Math.abs(vx) > 15;
+      if (vx > 15) this.facingRight = true;
+      else if (vx < -15) this.facingRight = false;
+      this.setScale(this.facingRight ? 1 : -1, 1);
+      if (!isGrounded) {
+        if (vy < -50) {
+          this.legLeft.setRotation(-0.35);
+          this.legRight.setRotation(-0.35);
+          this.legLeft.y = this.baseLegLeftY - 5;
+          this.legRight.y = this.baseLegRightY - 5;
+          this.leftCloak.setRotation(0.22);
+          this.rightCloak.setRotation(-0.22);
+          this.sprout.setRotation(this.facingRight ? -0.2 : 0.2);
+          this.head.y = this.baseHeadY - 2;
+        } else {
+          this.legLeft.setRotation(0.1);
+          this.legRight.setRotation(0.1);
+          this.legLeft.y = this.baseLegLeftY;
+          this.legRight.y = this.baseLegRightY;
+          this.leftCloak.setRotation(0.15);
+          this.rightCloak.setRotation(-0.15);
+          this.sprout.setRotation(this.facingRight ? 0.15 : -0.15);
+          this.head.y = this.baseHeadY;
+        }
+      } else if (isMoving) {
+        let runCycle = time * 0.016;
+        let stride = Math.sin(runCycle) * 0.65;
+        this.legLeft.setRotation(stride);
+        this.legRight.setRotation(-stride);
+        this.legLeft.y = this.baseLegLeftY - Math.max(0, Math.sin(runCycle) * 5);
+        this.legRight.y = this.baseLegRightY - Math.max(0, -Math.sin(runCycle) * 5);
+        this.leftCloak.setRotation(-0.18 + Math.sin(runCycle) * 0.12);
+        this.rightCloak.setRotation(-0.12 - Math.sin(runCycle) * 0.12);
+        this.head.y = this.baseHeadY + Math.abs(Math.sin(runCycle)) * 2.8;
+        this.sprout.setRotation(-0.2 + Math.sin(runCycle) * 0.15);
+      } else {
+        let breath = Math.sin(time * 35e-4);
+        this.legLeft.setRotation(0);
+        this.legRight.setRotation(0);
+        this.legLeft.y = this.baseLegLeftY;
+        this.legRight.y = this.baseLegRightY;
+        this.head.y = this.baseHeadY + breath * 1.8;
+        this.sprout.setRotation(Math.sin(time * 22e-4) * 0.14);
+        this.leftCloak.setRotation(breath * 0.035);
+        this.rightCloak.setRotation(-breath * 0.035);
+      }
     }
   };
 
@@ -723,33 +813,7 @@
       this.shadow = this.add.ellipse(200, h - 110, 48, 14, 0, 0.6).setDepth(8);
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
-      if (!this.anims.exists("mam_idle_anim")) {
-        this.anims.create({
-          key: "mam_idle_anim",
-          frames: this.anims.generateFrameNumbers("mam_idle_sheet", { start: 0, end: 7 }),
-          frameRate: 8,
-          repeat: -1
-        });
-        this.anims.create({
-          key: "mam_run_anim",
-          frames: this.anims.generateFrameNumbers("mam_run_sheet", { start: 0, end: 7 }),
-          frameRate: 14,
-          repeat: -1
-        });
-        this.anims.create({
-          key: "mam_jump_anim",
-          frames: this.anims.generateFrameNumbers("mam_jump_sheet", { start: 0, end: 5 }),
-          frameRate: 10,
-          repeat: 0
-        });
-      }
-      let startTex = this.textures.exists("mam_idle_sheet") ? "mam_idle_sheet" : "green_circle";
-      this.playerSprite = this.add.sprite(200, h - 150, startTex).setDepth(10);
-      this.playerSprite.setOrigin(0.5, 1);
-      this.playerSprite.setScale(1);
-      if (this.anims.exists("mam_idle_anim")) {
-        this.playerSprite.play("mam_idle_anim");
-      }
+      this.playerPuppet = new MamPuppet(this, 200, h - 110);
       this.playerEmitter = this.add.particles(0, 0, "firefly", {
         speed: { min: -15, max: 15 },
         scale: { start: 0.6, end: 0 },
@@ -1020,8 +1084,6 @@
       }).setScrollFactor(1.1).setDepth(99);
     }
     update() {
-      this.playerSprite.x = this.player.x;
-      this.playerSprite.y = this.player.y + 40;
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);
       AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
@@ -1072,11 +1134,11 @@
         if (isMovingLeft) {
           this.player.body.setVelocityX(-350);
           isMoving = true;
-          this.playerSprite.setFlipX(true);
+          this.playerPuppet.setFlipX(true);
         } else if (isMovingRight) {
           this.player.body.setVelocityX(350);
           isMoving = true;
-          this.playerSprite.setFlipX(false);
+          this.playerPuppet.setFlipX(false);
         } else {
           this.player.body.setVelocityX(0);
         }

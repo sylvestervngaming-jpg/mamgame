@@ -1,3 +1,4 @@
+import MamPuppet from '../entities/MamPuppet.js';
 import AtmosphereFX from '../utils/AtmosphereFX.js';
 import CollectibleItem from '../entities/CollectibleItem.js';
 import AssetManager from '../utils/AssetManager.js';
@@ -311,42 +312,14 @@ export default class RunnerScene extends Phaser.Scene {
         // Player Shadow & Aura (Polish)
         // Shadow duoi dat
         // Shadow dưới chân Mầm
+        // Shadow dưới chân Mầm
         this.shadow = this.add.ellipse(200, h - 110, 48, 14, 0x000000, 0.6).setDepth(8);
 
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
-        // Đảm bảo Sprite Sheet đã sẵn sàng
-        if (!this.anims.exists('mam_idle_anim')) {
-            this.anims.create({
-                key: 'mam_idle_anim',
-                frames: this.anims.generateFrameNumbers('mam_idle_sheet', { start: 0, end: 7 }),
-                frameRate: 8,
-                repeat: -1
-            });
-            this.anims.create({
-                key: 'mam_run_anim',
-                frames: this.anims.generateFrameNumbers('mam_run_sheet', { start: 0, end: 7 }),
-                frameRate: 14,
-                repeat: -1
-            });
-            this.anims.create({
-                key: 'mam_jump_anim',
-                frames: this.anims.generateFrameNumbers('mam_jump_sheet', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: 0
-            });
-        }
-
-        // Tạo Sprite nhân vật Mầm với Animation Idle mặc định
-        let startTex = this.textures.exists('mam_idle_sheet') ? 'mam_idle_sheet' : 'green_circle';
-        this.playerSprite = this.add.sprite(200, h - 150, startTex).setDepth(10);
-        this.playerSprite.setOrigin(0.5, 1);
-        this.playerSprite.setScale(1.0);
-        
-        if (this.anims.exists('mam_idle_anim')) {
-            this.playerSprite.play('mam_idle_anim');
-        }
+        // Khởi tạo Nhân vật Mầm ghép từ 7 layer tách rời (MamPuppet)
+        this.playerPuppet = new MamPuppet(this, 200, h - 110);
 
         this.playerEmitter = this.add.particles(0, 0, 'firefly', {
             speed: { min: -15, max: 15 },
@@ -685,9 +658,7 @@ export default class RunnerScene extends Phaser.Scene {
 
     update() {
         // Sync sprite to invisible physics body LUÃƒâ€N LUÃƒâ€N CHÃ¡ÂºÂ Y
-        this.playerSprite.x = this.player.x;
-        this.playerSprite.y = this.player.y + 40;
-        
+                        
 
         // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
         let groundY = this.getTerrainY(this.player.x);
@@ -765,11 +736,11 @@ export default class RunnerScene extends Phaser.Scene {
             if (isMovingLeft) {
                 this.player.body.setVelocityX(-350);
                 isMoving = true;
-                this.playerSprite.setFlipX(true);
+                this.playerPuppet.setFlipX(true);
             } else if (isMovingRight) {
                 this.player.body.setVelocityX(350);
                 isMoving = true;
-                this.playerSprite.setFlipX(false);
+                this.playerPuppet.setFlipX(false);
             } else {
                 this.player.body.setVelocityX(0);
             }
