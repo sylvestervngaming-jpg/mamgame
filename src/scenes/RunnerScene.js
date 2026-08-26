@@ -906,7 +906,7 @@ export default class RunnerScene extends Phaser.Scene {
 
             let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
             this.boxPrompt.x = this.box.x;
-            this.boxPrompt.y = this.box.y - 130;
+            this.boxPrompt.y = this.box.y - 180;
             this.boxPrompt.setText(isMobile ? '📦 Chạm để Buông ra' : '📦 Bấm F để Buông ra');
             this.boxPrompt.setAlpha(1);
 
@@ -920,7 +920,7 @@ export default class RunnerScene extends Phaser.Scene {
         } else if (isNearBox) {
             let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
             this.boxPrompt.x = this.box.x;
-            this.boxPrompt.y = this.box.y - 130;
+            this.boxPrompt.y = this.box.y - 180;
             this.boxPrompt.setText(isMobile ? '📦 Chạm để Cầm hộp' : '📦 Bấm F để Cầm hộp');
             this.boxPrompt.setAlpha(1);
 
@@ -1373,7 +1373,7 @@ export default class RunnerScene extends Phaser.Scene {
         
         let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         let stumpLabel = isMobile ? '🌱 Chạm để hồi sinh cây' : '🌱 Bấm F để hồi sinh cây';
-        let prompt = this.add.text(x, h - 245, stumpLabel, { 
+        let prompt = this.add.text(x, h - 300, stumpLabel, { 
             font: 'bold 18px Arial', 
             fill: '#00d2d3', 
             backgroundColor: '#1e272e', 

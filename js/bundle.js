@@ -1387,7 +1387,7 @@
         }
         let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
         this.boxPrompt.x = this.box.x;
-        this.boxPrompt.y = this.box.y - 130;
+        this.boxPrompt.y = this.box.y - 180;
         this.boxPrompt.setText(isMobile ? "\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 Bu\xF4ng ra" : "\u{1F4E6} B\u1EA5m F \u0111\u1EC3 Bu\xF4ng ra");
         this.boxPrompt.setAlpha(1);
         if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
@@ -1399,7 +1399,7 @@
       } else if (isNearBox) {
         let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
         this.boxPrompt.x = this.box.x;
-        this.boxPrompt.y = this.box.y - 130;
+        this.boxPrompt.y = this.box.y - 180;
         this.boxPrompt.setText(isMobile ? "\u{1F4E6} Ch\u1EA1m \u0111\u1EC3 C\u1EA7m h\u1ED9p" : "\u{1F4E6} B\u1EA5m F \u0111\u1EC3 C\u1EA7m h\u1ED9p");
         this.boxPrompt.setAlpha(1);
         if (Phaser.Input.Keyboard.JustDown(this.fKey) && this.player.body.onFloor()) {
@@ -1749,7 +1749,7 @@
       stumpContainer.bridgeLength = bridgeLength;
       let isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
       let stumpLabel = isMobile ? "\u{1F331} Ch\u1EA1m \u0111\u1EC3 h\u1ED3i sinh c\xE2y" : "\u{1F331} B\u1EA5m F \u0111\u1EC3 h\u1ED3i sinh c\xE2y";
-      let prompt = this.add.text(x, h - 245, stumpLabel, {
+      let prompt = this.add.text(x, h - 300, stumpLabel, {
         font: "bold 18px Arial",
         fill: "#00d2d3",
         backgroundColor: "#1e272e",
@@ -3215,7 +3215,7 @@
       this.setOrigin(0.5, 1);
       let isMobile = scene.sys.game.device.os.android || scene.sys.game.device.os.iOS || "ontouchstart" in window || navigator.maxTouchPoints > 0;
       let promptLabel = isMobile ? "\u{1F4AC} Ch\u1EA1m \u0111\u1EC3 n\xF3i chuy\u1EC7n" : "\u{1F4AC} B\u1EA5m F \u0111\u1EC3 n\xF3i chuy\u1EC7n";
-      this.promptText = scene.add.text(x, y - 125, promptLabel, {
+      this.promptText = scene.add.text(x, y - 170, promptLabel, {
         font: "bold 16px Arial",
         fill: "#00d2d3",
         backgroundColor: "#1e272e",

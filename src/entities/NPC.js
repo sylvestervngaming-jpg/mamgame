@@ -18,7 +18,7 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
         // UI bóng thoại tương tác (Chạm trực tiếp hoặc bấm F)
         let isMobile = scene.sys.game.device.os.android || scene.sys.game.device.os.iOS || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         let promptLabel = isMobile ? '💬 Chạm để nói chuyện' : '💬 Bấm F để nói chuyện';
-        this.promptText = scene.add.text(x, y - 125, promptLabel, {
+        this.promptText = scene.add.text(x, y - 170, promptLabel, {
             font: 'bold 16px Arial',
             fill: '#00d2d3',
             backgroundColor: '#1e272e',
