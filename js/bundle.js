@@ -248,17 +248,17 @@
       super(scene, x, y);
       this.scene = scene;
       this.setDepth(10);
-      this.backCloak = scene.add.image(0, -41, "mam_part_back_cloak").setOrigin(0.5, 0.5);
-      this.baseBackCloakY = -41;
-      this.legLeft = scene.add.image(2.5, -32.5, "mam_part_leg_left").setOrigin(0.5, 0);
+      this.backCloak = scene.add.image(-0.1, -40.7, "mam_part_back_cloak").setOrigin(0.5, 0.5).setDisplaySize(51.7, 61.9);
+      this.baseBackCloakY = -40.7;
+      this.legLeft = scene.add.image(2.5, -32.5, "mam_part_leg_left").setOrigin(0.5, 0).setDisplaySize(5.7, 32.5);
       this.baseLegLeftY = -32.5;
-      this.legRight = scene.add.image(10.3, -31.7, "mam_part_leg_right").setOrigin(0.5, 0);
+      this.legRight = scene.add.image(10.3, -31.7, "mam_part_leg_right").setOrigin(0.5, 0).setDisplaySize(5.7, 31.7);
       this.baseLegRightY = -31.7;
-      this.head = scene.add.image(4.6, -82, "mam_part_head_face").setOrigin(0.5, 0.5);
+      this.head = scene.add.image(4.6, -82, "mam_part_head_face").setOrigin(0.5, 0.5).setDisplaySize(23.4, 27.9);
       this.baseHeadY = -82;
-      this.sprout = scene.add.image(9.6, -93.8, "mam_part_sprout_top").setOrigin(0.5, 1);
-      this.leftCloak = scene.add.image(-8.5, -71.8, "mam_part_left_cloak").setOrigin(0.5, 0);
-      this.rightCloak = scene.add.image(15.6, -69.7, "mam_part_right_cloak").setOrigin(0.5, 0);
+      this.sprout = scene.add.image(9.6, -93.8, "mam_part_sprout_top").setOrigin(0.5, 1).setDisplaySize(12.6, 16.1);
+      this.leftCloak = scene.add.image(-8.5, -71.8, "mam_part_left_cloak").setOrigin(0.5, 0).setDisplaySize(34.7, 59.4);
+      this.rightCloak = scene.add.image(15.6, -69.7, "mam_part_right_cloak").setOrigin(0.5, 0).setDisplaySize(20.7, 58.2);
       this.add([
         this.backCloak,
         this.legLeft,
@@ -276,7 +276,6 @@
       this.curLeftCloakRot = 0;
       this.curRightCloakRot = 0;
       this.curBackCloakRot = 0;
-      this.curBackCloakScaleX = 1;
       this.curHeadY = this.baseHeadY;
       this.curSproutRot = 0;
       this.facingRight = true;
@@ -293,11 +292,11 @@
       else if (vx < -15) this.facingRight = false;
       this.setScale(this.facingRight ? 1 : -1, 1);
       if (!this.wasGrounded && isGrounded && vy >= 0) {
-        this.landSquash = 0.72;
+        this.landSquash = 0.78;
         this.scene.tweens.add({
           targets: this,
           landSquash: 1,
-          duration: 220,
+          duration: 200,
           ease: "Back.easeOut"
         });
       }
@@ -309,87 +308,77 @@
       let targetLeftCloakRot = 0;
       let targetRightCloakRot = 0;
       let targetBackCloakRot = 0;
-      let targetBackCloakScaleX = 1;
       let targetHeadY = this.baseHeadY;
       let targetSproutRot = 0;
       if (!isGrounded) {
-        if (vy < -120) {
-          targetLegLeftRot = -0.55;
-          targetLegRightRot = -0.42;
-          targetLegLeftY = this.baseLegLeftY - 8;
-          targetLegRightY = this.baseLegRightY - 7;
-          targetLeftCloakRot = 0.28;
-          targetRightCloakRot = -0.28;
-          targetBackCloakScaleX = 0.92;
-          targetSproutRot = -0.28;
-          targetHeadY = this.baseHeadY - 3;
-        } else if (vy >= -120 && vy <= 120) {
-          targetLegLeftRot = -0.15;
-          targetLegRightRot = -0.1;
-          targetLegLeftY = this.baseLegLeftY - 4;
-          targetLegRightY = this.baseLegRightY - 3;
-          let floatWave = Math.sin(time * 8e-3) * 0.08;
-          targetLeftCloakRot = 0.18 + floatWave;
-          targetRightCloakRot = -0.18 - floatWave;
-          targetBackCloakScaleX = 1.05;
-          targetSproutRot = Math.sin(time * 6e-3) * 0.12;
+        if (vy < -100) {
+          targetLegLeftRot = -0.45;
+          targetLegRightRot = -0.35;
+          targetLegLeftY = this.baseLegLeftY - 6;
+          targetLegRightY = this.baseLegRightY - 5;
+          targetLeftCloakRot = 0.16;
+          targetRightCloakRot = -0.16;
+          targetSproutRot = -0.22;
+          targetHeadY = this.baseHeadY - 2;
+        } else if (vy >= -100 && vy <= 100) {
+          let floatWave = Math.sin(time * 7e-3) * 0.05;
+          targetLegLeftRot = -0.12;
+          targetLegRightRot = -0.08;
+          targetLegLeftY = this.baseLegLeftY - 3;
+          targetLegRightY = this.baseLegRightY - 2;
+          targetLeftCloakRot = 0.12 + floatWave;
+          targetRightCloakRot = -0.12 - floatWave;
+          targetSproutRot = Math.sin(time * 5e-3) * 0.08;
           targetHeadY = this.baseHeadY;
         } else {
-          targetLegLeftRot = 0.15;
-          targetLegRightRot = 0.18;
-          targetLegLeftY = this.baseLegLeftY + 1;
-          targetLegRightY = this.baseLegRightY + 1;
-          let windFlutter = Math.sin(time * 0.018) * 0.06;
-          targetLeftCloakRot = 0.32 + windFlutter;
-          targetRightCloakRot = -0.32 - windFlutter;
-          targetBackCloakRot = Math.sin(time * 0.015) * 0.05;
-          targetBackCloakScaleX = 1.16;
-          targetSproutRot = 0.3 + Math.sin(time * 0.012) * 0.08;
+          targetLegLeftRot = 0.12;
+          targetLegRightRot = 0.15;
+          targetLegLeftY = this.baseLegLeftY;
+          targetLegRightY = this.baseLegRightY;
+          let windFlutter = Math.sin(time * 0.015) * 0.04;
+          targetLeftCloakRot = 0.22 + windFlutter;
+          targetRightCloakRot = -0.22 - windFlutter;
+          targetBackCloakRot = Math.sin(time * 0.012) * 0.04;
+          targetSproutRot = 0.22 + Math.sin(time * 0.01) * 0.05;
           targetHeadY = this.baseHeadY + 1;
         }
       } else if (isMoving) {
-        let runCycle = time * 0.015;
+        let runCycle = time * 0.014;
         let legSwing = Math.sin(runCycle);
-        targetLegLeftRot = legSwing * 0.72;
-        targetLegRightRot = -legSwing * 0.72;
-        targetLegLeftY = this.baseLegLeftY - Math.max(0, legSwing * 6.5);
-        targetLegRightY = this.baseLegRightY - Math.max(0, -legSwing * 6.5);
-        let cloakWave1 = Math.sin(runCycle - 0.5) * 0.18 + Math.sin(time * 7e-3) * 0.05;
-        let cloakWave2 = Math.sin(runCycle - 0.8) * 0.15 + Math.sin(time * 9e-3) * 0.04;
-        let backWave = Math.sin(runCycle - 0.3) * 0.12;
-        targetLeftCloakRot = -0.15 + cloakWave1;
-        targetRightCloakRot = -0.1 - cloakWave2;
-        targetBackCloakRot = backWave;
-        targetBackCloakScaleX = 1 + Math.sin(runCycle * 2) * 0.05;
-        let stepBounce = Math.abs(Math.sin(runCycle)) * 3.2;
+        targetLegLeftRot = legSwing * 0.6;
+        targetLegRightRot = -legSwing * 0.6;
+        targetLegLeftY = this.baseLegLeftY - Math.max(0, legSwing * 5);
+        targetLegRightY = this.baseLegRightY - Math.max(0, -legSwing * 5);
+        let cloakWave = Math.sin(runCycle - 0.5) * 0.09 + Math.sin(time * 6e-3) * 0.03;
+        targetLeftCloakRot = -0.1 + cloakWave;
+        targetRightCloakRot = -0.06 - cloakWave * 0.8;
+        targetBackCloakRot = Math.sin(runCycle - 0.3) * 0.06;
+        let stepBounce = Math.abs(Math.sin(runCycle)) * 2.2;
         targetHeadY = this.baseHeadY + stepBounce;
-        targetSproutRot = -0.22 + Math.sin(runCycle - 1) * 0.18;
+        targetSproutRot = -0.15 + Math.sin(runCycle - 0.8) * 0.1;
       } else {
-        let breathCycle = time * 3e-3;
-        let breath = Math.sin(breathCycle);
-        let wind = Math.sin(time * 18e-4);
+        let breath = Math.sin(time * 3e-3);
+        let wind = Math.sin(time * 16e-4);
         targetLegLeftRot = 0;
         targetLegRightRot = 0;
         targetLegLeftY = this.baseLegLeftY;
         targetLegRightY = this.baseLegRightY;
-        targetHeadY = this.baseHeadY + breath * 2;
-        targetSproutRot = wind * 0.16 + breath * 0.05;
-        targetLeftCloakRot = breath * 0.04 + wind * 0.02;
-        targetRightCloakRot = -breath * 0.04 - wind * 0.02;
-        targetBackCloakRot = wind * 0.03;
-        targetBackCloakScaleX = 1 + breath * 0.03;
+        targetHeadY = this.baseHeadY + breath * 1.5;
+        targetSproutRot = wind * 0.12 + breath * 0.04;
+        targetLeftCloakRot = breath * 0.025 + wind * 0.015;
+        targetRightCloakRot = -breath * 0.025 - wind * 0.015;
+        targetBackCloakRot = wind * 0.02;
       }
-      const lerpSpeed = 0.22;
+      const lerpSpeed = 0.2;
       this.curLegLeftRot = Phaser.Math.Linear(this.curLegLeftRot, targetLegLeftRot, lerpSpeed);
       this.curLegRightRot = Phaser.Math.Linear(this.curLegRightRot, targetLegRightRot, lerpSpeed);
       this.curLegLeftY = Phaser.Math.Linear(this.curLegLeftY, targetLegLeftY, lerpSpeed);
       this.curLegRightY = Phaser.Math.Linear(this.curLegRightY, targetLegRightY, lerpSpeed);
-      this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.18);
-      this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.18);
-      this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.18);
-      this.curBackCloakScaleX = Phaser.Math.Linear(this.curBackCloakScaleX, targetBackCloakScaleX, 0.18);
+      this.curLeftCloakRot = Phaser.Math.Linear(this.curLeftCloakRot, targetLeftCloakRot, 0.15);
+      this.curRightCloakRot = Phaser.Math.Linear(this.curRightCloakRot, targetRightCloakRot, 0.15);
+      this.curBackCloakRot = Phaser.Math.Linear(this.curBackCloakRot, targetBackCloakRot, 0.15);
       this.curHeadY = Phaser.Math.Linear(this.curHeadY, targetHeadY, lerpSpeed);
-      this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.18);
+      this.curSproutRot = Phaser.Math.Linear(this.curSproutRot, targetSproutRot, 0.15);
       this.legLeft.setRotation(this.curLegLeftRot);
       this.legRight.setRotation(this.curLegRightRot);
       this.legLeft.y = this.curLegLeftY;
@@ -397,7 +386,6 @@
       this.leftCloak.setRotation(this.curLeftCloakRot);
       this.rightCloak.setRotation(this.curRightCloakRot);
       this.backCloak.setRotation(this.curBackCloakRot);
-      this.backCloak.setScale(this.curBackCloakScaleX, 1);
       this.head.y = this.curHeadY * this.landSquash;
       this.sprout.setRotation(this.curSproutRot);
       this.sprout.y = (this.curHeadY - 11.8) * this.landSquash;
