@@ -52,7 +52,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         
         // --- BÓNG (SHADOW) ---
         this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0x000000, 0.6).setDepth(9);
-        this.aura = scene.add.circle(x, y - 25, 42, initialColor, 0.28).setBlendMode('ADD').setDepth(9);
+        this.aura = scene.add.ellipse(x, y - 25, 65, 85, initialColor, 0.22).setBlendMode('ADD').setDepth(9);
         
         // --- TRẠNG THÁI (STATE) ---
         this.playerState = 'idle';

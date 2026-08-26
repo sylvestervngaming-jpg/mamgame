@@ -311,15 +311,12 @@ export default class RunnerScene extends Phaser.Scene {
         // Player Shadow & Aura (Polish)
         // Shadow duoi dat
         let initialColor = this.registry.get('playerColor') || 0x2ecc71;
-        this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0x000000, 0.65).setDepth(8);
-        // DUY NHAT 1 AURA
-        this.aura = this.add.circle(200, h - 135, 34, initialColor, 0.35).setBlendMode('ADD').setDepth(9);
+        this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0x000000, 0.6).setDepth(8);
+
+        // Aura vầng sáng dịu nhẹ ôm sát thân Mầm
+        this.aura = this.add.ellipse(200, h - 155, 65, 85, initialColor, 0.22).setBlendMode('ADD').setDepth(9);
 
         // Texture Mam
-        AssetManager.generateAndSave(this, 'green_circle', 50, 50, (g) => {
-            g.fillStyle(0xffffff);
-            g.fillCircle(25, 25, 25);
-        });
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
@@ -327,9 +324,10 @@ export default class RunnerScene extends Phaser.Scene {
         this.playerSprite = this.add.sprite(200, h - 150, playerTex).setDepth(10);
         this.playerSprite.setOrigin(0.5, 1);
         
-        // Kích thước chuẩn tỉ lệ theo tranh vẽ của Artist
+        // Kích thước chuẩn
         this.playerBaseScaleX = 0.58;
         this.playerBaseScaleY = 0.58;
+        this.playerSprite.baseScale = 0.58;
         this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
         this.playerSquashFactor = 1.0;
         this.playerWasGrounded = true;
@@ -800,48 +798,7 @@ export default class RunnerScene extends Phaser.Scene {
             }
         }
 
-        // --- PROCEDURAL ANIMATION TWEENING ---
-        let newState = 'idle';
-        if (!isGrounded) newState = 'jump';
-        else if (isMoving) newState = 'walk';
-
-        if (this.playerState !== newState) {
-            this.playerState = newState;
-            if (this.playerTween) this.playerTween.stop();
-            this.playerSprite.setAngle(0);
-            this.playerSprite.setScale(this.playerSprite.baseScale);
-            
-            if (newState === 'idle') {
-                this.playerTween = this.tweens.add({
-                    targets: this.playerSprite,
-                    scaleY: this.playerSprite.baseScale * 0.95,
-                    scaleX: this.playerSprite.baseScale * 1.05,
-                    duration: 1000,
-                    yoyo: true,
-                    repeat: -1,
-                    ease: 'Sine.easeInOut'
-                });
-            } else if (newState === 'walk') {
-                this.playerTween = this.tweens.add({
-                    targets: this.playerSprite,
-                    angle: { from: -15, to: 15 },
-                    scaleY: this.playerSprite.baseScale * 0.9,
-                    duration: 200,
-                    yoyo: true,
-                    repeat: -1,
-                    ease: 'Sine.easeInOut'
-                });
-            } else if (newState === 'jump') {
-                this.playerTween = this.tweens.add({
-                    targets: this.playerSprite,
-                    scaleY: this.playerSprite.baseScale * 1.2,
-                    scaleX: this.playerSprite.baseScale * 0.8,
-                    duration: 300,
-                    yoyo: true,
-                    ease: 'Quad.easeOut'
-                });
-            }
-        }
+// Old conflicting tween removed to eliminate NaN flickering
 
         // --- LOGIC TÃ†Â¯Ã†Â NG TÃƒÂC THIÃƒÅ N NHIÃƒÅ N ---
         // CÃ¡Â»Â lay Ã„â€˜Ã¡Â»â„¢ng

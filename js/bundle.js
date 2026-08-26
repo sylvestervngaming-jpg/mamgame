@@ -690,12 +690,8 @@
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
       let initialColor = this.registry.get("playerColor") || 3066993;
-      this.shadow = this.add.ellipse(200, h - 110, 60, 16, 0, 0.65).setDepth(8);
-      this.aura = this.add.circle(200, h - 135, 34, initialColor, 0.35).setBlendMode("ADD").setDepth(9);
-      AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
-        g.fillStyle(16777215);
-        g.fillCircle(25, 25, 25);
-      });
+      this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0, 0.6).setDepth(8);
+      this.aura = this.add.ellipse(200, h - 155, 65, 85, initialColor, 0.22).setBlendMode("ADD").setDepth(9);
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
       let playerTex = this.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
@@ -703,6 +699,7 @@
       this.playerSprite.setOrigin(0.5, 1);
       this.playerBaseScaleX = 0.58;
       this.playerBaseScaleY = 0.58;
+      this.playerSprite.baseScale = 0.58;
       this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
       this.playerSquashFactor = 1;
       this.playerWasGrounded = true;
@@ -1069,45 +1066,6 @@
         if (!this.lastDustTime || this.time.now - this.lastDustTime > 150) {
           this.dustEmitter.emitParticleAt(this.player.x, this.player.y + 40);
           this.lastDustTime = this.time.now;
-        }
-      }
-      let newState = "idle";
-      if (!isGrounded) newState = "jump";
-      else if (isMoving) newState = "walk";
-      if (this.playerState !== newState) {
-        this.playerState = newState;
-        if (this.playerTween) this.playerTween.stop();
-        this.playerSprite.setAngle(0);
-        this.playerSprite.setScale(this.playerSprite.baseScale);
-        if (newState === "idle") {
-          this.playerTween = this.tweens.add({
-            targets: this.playerSprite,
-            scaleY: this.playerSprite.baseScale * 0.95,
-            scaleX: this.playerSprite.baseScale * 1.05,
-            duration: 1e3,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut"
-          });
-        } else if (newState === "walk") {
-          this.playerTween = this.tweens.add({
-            targets: this.playerSprite,
-            angle: { from: -15, to: 15 },
-            scaleY: this.playerSprite.baseScale * 0.9,
-            duration: 200,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut"
-          });
-        } else if (newState === "jump") {
-          this.playerTween = this.tweens.add({
-            targets: this.playerSprite,
-            scaleY: this.playerSprite.baseScale * 1.2,
-            scaleX: this.playerSprite.baseScale * 0.8,
-            duration: 300,
-            yoyo: true,
-            ease: "Quad.easeOut"
-          });
         }
       }
       let px = this.player.x;
@@ -2644,7 +2602,7 @@
         scene.registry.events.off("changedata-playerColor", this.colorChangeListener);
       });
       this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0, 0.6).setDepth(9);
-      this.aura = scene.add.circle(x, y - 25, 42, initialColor, 0.28).setBlendMode("ADD").setDepth(9);
+      this.aura = scene.add.ellipse(x, y - 25, 65, 85, initialColor, 0.22).setBlendMode("ADD").setDepth(9);
       this.playerState = "idle";
       this.playerTween = null;
       if (!scene.keyW) scene.keyW = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
