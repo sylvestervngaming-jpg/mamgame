@@ -1,4 +1,6 @@
-export default class MamPuppet extends Phaser.GameObjects.Container {
+﻿const fs = require('fs');
+
+const smoothPuppetCode = `export default class MamPuppet extends Phaser.GameObjects.Container {
     constructor(scene, x, y) {
         super(scene, x, y);
         this.scene = scene;
@@ -249,3 +251,7 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.sprout.y = (this.curHeadY - 11.8) * this.landSquash;
     }
 }
+`;
+
+fs.writeFileSync('src/entities/MamPuppet.js', smoothPuppetCode, 'utf8');
+console.log('Successfully upgraded MamPuppet with multi-harmonic flutter, realistic jump phases, and smooth lerping!');
