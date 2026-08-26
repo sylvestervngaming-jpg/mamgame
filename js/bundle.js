@@ -386,9 +386,9 @@
       this.leftCloak.setRotation(this.curLeftCloakRot);
       this.rightCloak.setRotation(this.curRightCloakRot);
       this.backCloak.setRotation(this.curBackCloakRot);
-      this.head.y = this.curHeadY * this.landSquash;
+      this.head.y = Math.round(this.curHeadY * this.landSquash);
       this.sprout.setRotation(this.curSproutRot);
-      this.sprout.y = (this.curHeadY - 11.8) * this.landSquash;
+      this.sprout.y = Math.round((this.curHeadY - 11.8) * this.landSquash);
     }
   };
 
@@ -694,6 +694,7 @@
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       this.cameras.main.fadeIn(1e3, 0, 0, 0);
+      this.cameras.main.setRoundPixels(true);
       this.registry.set("showUI", true);
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
@@ -1156,8 +1157,8 @@
     }
     update(time, delta) {
       if (this.playerPuppet) {
-        this.playerPuppet.x = this.player.x;
-        this.playerPuppet.y = this.player.y + 40;
+        this.playerPuppet.x = Math.round(this.player.x);
+        this.playerPuppet.y = Math.round(this.player.y + 40);
         let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
         this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
       }
@@ -3668,6 +3669,7 @@
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
+    roundPixels: true,
     physics: {
       default: "arcade",
       arcade: {

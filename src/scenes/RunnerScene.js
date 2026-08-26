@@ -55,6 +55,7 @@ export default class RunnerScene extends Phaser.Scene {
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+        this.cameras.main.setRoundPixels(true);
 
         this.registry.set('showUI', true);
         this.scene.launch('UIScene');
@@ -659,8 +660,8 @@ export default class RunnerScene extends Phaser.Scene {
     update(time, delta) {
         // Đồng bộ vị trí và hoạt ảnh cho MamPuppet (LUÔN CHẠY)
         if (this.playerPuppet) {
-            this.playerPuppet.x = this.player.x;
-            this.playerPuppet.y = this.player.y + 40;
+            this.playerPuppet.x = Math.round(this.player.x);
+            this.playerPuppet.y = Math.round(this.player.y + 40);
             let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
             this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
         }

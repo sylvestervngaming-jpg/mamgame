@@ -231,8 +231,8 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.rightCloak.setRotation(this.curRightCloakRot);
         this.backCloak.setRotation(this.curBackCloakRot);
 
-        this.head.y = this.curHeadY * this.landSquash;
+        this.head.y = Math.round(this.curHeadY * this.landSquash);
         this.sprout.setRotation(this.curSproutRot);
-        this.sprout.y = (this.curHeadY - 11.8) * this.landSquash;
+        this.sprout.y = Math.round((this.curHeadY - 11.8) * this.landSquash);
     }
 }
