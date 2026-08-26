@@ -81,6 +81,9 @@
     preload() {
       this.add.text(640, 360, "\u0110ang t\u1EA3i...", { font: "32px Arial", fill: "#ffffff" }).setOrigin(0.5, 0.5);
       AssetManager.preloadAll(this);
+      this.load.spritesheet("mam_idle_sheet", "assets/sprites/mam_anim_idle.png", { frameWidth: 96, frameHeight: 128 });
+      this.load.spritesheet("mam_run_sheet", "assets/sprites/mam_anim_run.png", { frameWidth: 96, frameHeight: 128 });
+      this.load.spritesheet("mam_jump_sheet", "assets/sprites/mam_anim_jump.png", { frameWidth: 96, frameHeight: 128 });
     }
     create() {
       this.registry.set("playerColor", 3066993);
@@ -114,6 +117,30 @@
         g.fillStyle(3066993, 1);
         g.fillCircle(25, 25, 25);
       });
+      if (!this.anims.exists("mam_idle_anim")) {
+        this.anims.create({
+          key: "mam_idle_anim",
+          frames: this.anims.generateFrameNumbers("mam_idle_sheet", { start: 0, end: 7 }),
+          frameRate: 8,
+          repeat: -1
+        });
+      }
+      if (!this.anims.exists("mam_run_anim")) {
+        this.anims.create({
+          key: "mam_run_anim",
+          frames: this.anims.generateFrameNumbers("mam_run_sheet", { start: 0, end: 7 }),
+          frameRate: 14,
+          repeat: -1
+        });
+      }
+      if (!this.anims.exists("mam_jump_anim")) {
+        this.anims.create({
+          key: "mam_jump_anim",
+          frames: this.anims.generateFrameNumbers("mam_jump_sheet", { start: 0, end: 5 }),
+          frameRate: 10,
+          repeat: 0
+        });
+      }
       this.scene.start("MenuScene");
     }
   };
@@ -693,30 +720,36 @@
       this.physics.add.collider(this.player, this.groundGroup);
       this.physics.add.collider(this.player, this.wallJumpLeft);
       this.physics.add.collider(this.player, this.wallJumpRight);
-      let initialColor = this.registry.get("playerColor") || 3066993;
-      this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0, 0.6).setDepth(8);
-      this.aura = this.add.ellipse(200, h - 150 - 50, 46, 88, initialColor, 0.2).setBlendMode("ADD").setDepth(9);
+      this.shadow = this.add.ellipse(200, h - 110, 48, 14, 0, 0.6).setDepth(8);
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
-      let initialTex = this.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
-      this.playerSprite = this.add.sprite(200, h - 150, initialTex).setDepth(10);
-      this.playerSprite.setOrigin(0.5, 1);
-      this.playerSprite.setDisplaySize(48, 102);
-      if (!this.textures.exists("mam_idle")) {
-        this.load.image("mam_idle", "assets/sprites/mam_idle.png");
-        this.load.once("filecomplete-image-mam_idle", () => {
-          if (this.playerSprite) {
-            this.playerSprite.setTexture("mam_idle");
-            this.playerSprite.setDisplaySize(48, 102);
-          }
+      if (!this.anims.exists("mam_idle_anim")) {
+        this.anims.create({
+          key: "mam_idle_anim",
+          frames: this.anims.generateFrameNumbers("mam_idle_sheet", { start: 0, end: 7 }),
+          frameRate: 8,
+          repeat: -1
         });
-        this.load.start();
+        this.anims.create({
+          key: "mam_run_anim",
+          frames: this.anims.generateFrameNumbers("mam_run_sheet", { start: 0, end: 7 }),
+          frameRate: 14,
+          repeat: -1
+        });
+        this.anims.create({
+          key: "mam_jump_anim",
+          frames: this.anims.generateFrameNumbers("mam_jump_sheet", { start: 0, end: 5 }),
+          frameRate: 10,
+          repeat: 0
+        });
       }
-      this.playerSquashFactor = 1;
-      this.playerWasGrounded = true;
-      this.registry.events.on("changedata-playerColor", (parent, color) => {
-        if (this.aura) this.aura.setFillStyle(color, 0.2);
-      });
+      let startTex = this.textures.exists("mam_idle_sheet") ? "mam_idle_sheet" : "green_circle";
+      this.playerSprite = this.add.sprite(200, h - 150, startTex).setDepth(10);
+      this.playerSprite.setOrigin(0.5, 1);
+      this.playerSprite.setScale(1);
+      if (this.anims.exists("mam_idle_anim")) {
+        this.playerSprite.play("mam_idle_anim");
+      }
       this.playerEmitter = this.add.particles(0, 0, "firefly", {
         speed: { min: -15, max: 15 },
         scale: { start: 0.6, end: 0 },
@@ -2602,14 +2635,12 @@
       this.setTint(initialColor);
       this.colorChangeListener = (parent, color) => {
         this.setTint(color);
-        if (this.aura) this.aura.setFillStyle(color, 0.28);
       };
       scene.registry.events.on("changedata-playerColor", this.colorChangeListener);
       this.on("destroy", () => {
         scene.registry.events.off("changedata-playerColor", this.colorChangeListener);
       });
       this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0, 0.6).setDepth(9);
-      this.aura = scene.add.ellipse(x, y - 25, 65, 85, initialColor, 0.22).setBlendMode("ADD").setDepth(9);
       this.playerState = "idle";
       this.playerTween = null;
       if (!scene.keyW) scene.keyW = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -2649,7 +2680,6 @@
         this.hitbox.body.setVelocityY(-600);
       }
       this.x = this.hitbox.x;
-      if (this.aura) this.aura.setPosition(this.x, this.y - 25);
       this.y = this.hitbox.y + 20;
       this.shadow.x = this.hitbox.x;
       this.shadow.y = groundY;

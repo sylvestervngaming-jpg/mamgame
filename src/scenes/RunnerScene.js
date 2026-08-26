@@ -310,38 +310,43 @@ export default class RunnerScene extends Phaser.Scene {
 
         // Player Shadow & Aura (Polish)
         // Shadow duoi dat
-        let initialColor = this.registry.get('playerColor') || 0x2ecc71;
-        this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0x000000, 0.6).setDepth(8);
-
-        // Vầng sáng Aura ôm sát thân Mầm (Tâm tại y - 50, rộng 46px, cao 90px)
-        this.aura = this.add.ellipse(200, h - 150 - 50, 46, 88, initialColor, 0.2).setBlendMode('ADD').setDepth(9);
+        // Shadow dưới chân Mầm
+        this.shadow = this.add.ellipse(200, h - 110, 48, 14, 0x000000, 0.6).setDepth(8);
 
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
-        // Sprite nhân vật Mầm
-        let initialTex = this.textures.exists('mam_idle') ? 'mam_idle' : 'green_circle';
-        this.playerSprite = this.add.sprite(200, h - 150, initialTex).setDepth(10);
-        this.playerSprite.setOrigin(0.5, 1);
-        this.playerSprite.setDisplaySize(48, 102);
-
-        // Tự động gán texture mam_idle ngay khi tải xong từ mạng
-        if (!this.textures.exists('mam_idle')) {
-            this.load.image('mam_idle', 'assets/sprites/mam_idle.png');
-            this.load.once('filecomplete-image-mam_idle', () => {
-                if (this.playerSprite) {
-                    this.playerSprite.setTexture('mam_idle');
-                    this.playerSprite.setDisplaySize(48, 102);
-                }
+        // Đảm bảo Sprite Sheet đã sẵn sàng
+        if (!this.anims.exists('mam_idle_anim')) {
+            this.anims.create({
+                key: 'mam_idle_anim',
+                frames: this.anims.generateFrameNumbers('mam_idle_sheet', { start: 0, end: 7 }),
+                frameRate: 8,
+                repeat: -1
             });
-            this.load.start();
+            this.anims.create({
+                key: 'mam_run_anim',
+                frames: this.anims.generateFrameNumbers('mam_run_sheet', { start: 0, end: 7 }),
+                frameRate: 14,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'mam_jump_anim',
+                frames: this.anims.generateFrameNumbers('mam_jump_sheet', { start: 0, end: 5 }),
+                frameRate: 10,
+                repeat: 0
+            });
         }
 
-        this.playerSquashFactor = 1.0;
-        this.playerWasGrounded = true;
-        this.registry.events.on('changedata-playerColor', (parent, color) => {
-            if (this.aura) this.aura.setFillStyle(color, 0.2);
-        });
+        // Tạo Sprite nhân vật Mầm với Animation Idle mặc định
+        let startTex = this.textures.exists('mam_idle_sheet') ? 'mam_idle_sheet' : 'green_circle';
+        this.playerSprite = this.add.sprite(200, h - 150, startTex).setDepth(10);
+        this.playerSprite.setOrigin(0.5, 1);
+        this.playerSprite.setScale(1.0);
+        
+        if (this.anims.exists('mam_idle_anim')) {
+            this.playerSprite.play('mam_idle_anim');
+        }
 
         this.playerEmitter = this.add.particles(0, 0, 'firefly', {
             speed: { min: -15, max: 15 },

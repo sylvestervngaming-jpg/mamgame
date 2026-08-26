@@ -42,8 +42,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
         this.colorChangeListener = (parent, color) => {
             this.setTint(color);
-            if (this.aura) this.aura.setFillStyle(color, 0.28);
-        };
+                    };
         scene.registry.events.on('changedata-playerColor', this.colorChangeListener);
 
         this.on('destroy', () => {
@@ -52,8 +51,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         
         // --- BÓNG (SHADOW) ---
         this.shadow = scene.add.ellipse(x, y + 20, 60, 15, 0x000000, 0.6).setDepth(9);
-        this.aura = scene.add.ellipse(x, y - 25, 65, 85, initialColor, 0.22).setBlendMode('ADD').setDepth(9);
-        
+                
         // --- TRẠNG THÁI (STATE) ---
         this.playerState = 'idle';
         this.playerTween = null;
@@ -105,8 +103,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
         // Đồng bộ vị trí Visual với Hitbox (Visual nằm trên tâm Hitbox 20px)
         this.x = this.hitbox.x;
-        if (this.aura) this.aura.setPosition(this.x, this.y - 25);
-        this.y = this.hitbox.y + 20;
+                this.y = this.hitbox.y + 20;
 
         // Đồng bộ Bóng
         this.shadow.x = this.hitbox.x;
