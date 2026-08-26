@@ -1087,7 +1087,13 @@
         tint: 3355443
       }).setScrollFactor(1.1).setDepth(99);
     }
-    update() {
+    update(time, delta) {
+      if (this.playerPuppet) {
+        this.playerPuppet.x = this.player.x;
+        this.playerPuppet.y = this.player.y + 40;
+        let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
+        this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
+      }
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);
       AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);

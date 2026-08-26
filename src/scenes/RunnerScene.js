@@ -656,9 +656,14 @@ export default class RunnerScene extends Phaser.Scene {
         }).setScrollFactor(1.1).setDepth(99);
     }
 
-    update() {
-        // Sync sprite to invisible physics body LUÃƒâ€N LUÃƒâ€N CHÃ¡ÂºÂ Y
-                        
+    update(time, delta) {
+        // Đồng bộ vị trí và hoạt ảnh cho MamPuppet (LUÔN CHẠY)
+        if (this.playerPuppet) {
+            this.playerPuppet.x = this.player.x;
+            this.playerPuppet.y = this.player.y + 40;
+            let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
+            this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow);
+        }
 
         // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
         let groundY = this.getTerrainY(this.player.x);
