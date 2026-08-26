@@ -10,7 +10,8 @@ export default class AssetManager {
             { key: 'toxic_ground', file: 'assets/sprites/toxic_ground.jpg' },
             { key: 'bg', file: 'assets/sprites/bg.jpg' },
             { key: 'ground', file: 'assets/sprites/ground.jpg' },
-            { key: 'sprout', file: 'assets/sprites/sprout.png' }
+            { key: 'sprout', file: 'assets/sprites/sprout.png' },
+            { key: 'mam_idle', file: 'assets/sprites/mam_idle.png' }
         ];
 
         coreAssets.forEach(item => {

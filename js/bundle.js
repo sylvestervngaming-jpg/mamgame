@@ -7,7 +7,8 @@
         { key: "toxic_ground", file: "assets/sprites/toxic_ground.jpg" },
         { key: "bg", file: "assets/sprites/bg.jpg" },
         { key: "ground", file: "assets/sprites/ground.jpg" },
-        { key: "sprout", file: "assets/sprites/sprout.png" }
+        { key: "sprout", file: "assets/sprites/sprout.png" },
+        { key: "mam_idle", file: "assets/sprites/mam_idle.png" }
       ];
       coreAssets.forEach((item) => {
         if (!scene.textures.exists(item.key)) {
@@ -697,11 +698,14 @@
       });
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
-      this.playerSprite = this.add.sprite(200, h - 150, "green_circle").setDepth(10);
-      this.playerSprite.setTint(initialColor);
+      let playerTex = this.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
+      this.playerSprite = this.add.sprite(200, h - 150, playerTex).setDepth(10);
       this.playerSprite.setOrigin(0.5, 1);
-      this.playerSprite.baseScale = 1;
-      this.playerSprite.setScale(this.playerSprite.baseScale);
+      this.playerBaseScaleX = 0.58;
+      this.playerBaseScaleY = 0.58;
+      this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
+      this.playerSquashFactor = 1;
+      this.playerWasGrounded = true;
       this.registry.events.on("changedata-playerColor", (parent, color) => {
         if (this.playerSprite) this.playerSprite.setTint(color);
         if (this.aura) this.aura.setFillStyle(color, 0.35);
@@ -2617,7 +2621,8 @@
         g.fillStyle(16777215);
         g.fillCircle(25, 25, 25);
       });
-      this.setTexture("green_circle");
+      let pTex = scene.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
+      this.setTexture(pTex);
       scene.add.existing(this);
       this.hitbox = scene.add.rectangle(x, y, 40, 40, 0, 0).setOrigin(0.5, 0.5);
       scene.physics.add.existing(this.hitbox);
@@ -2625,7 +2630,7 @@
       this.hitbox.body.setGravityY(1200);
       this.hitbox.body.setCollideWorldBounds(true);
       this.setOrigin(0.5, 1);
-      this.baseScale = 1;
+      this.baseScale = 0.58;
       this.setScale(this.baseScale);
       this.setDepth(10);
       let initialColor = scene.registry.get("playerColor") || 3066993;

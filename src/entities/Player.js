@@ -18,7 +18,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
             g.fillStyle(0xffffff);
             g.fillCircle(25, 25, 25);
         });
-        this.setTexture('green_circle');
+        let pTex = scene.textures.exists('mam_idle') ? 'mam_idle' : 'green_circle';
+        this.setTexture(pTex);
         
         scene.add.existing(this);
         
@@ -31,7 +32,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         
         // --- VISUAL SPRITE ---
         this.setOrigin(0.5, 1);
-        this.baseScale = 1;
+        this.baseScale = 0.58;
         this.setScale(this.baseScale);
         this.setDepth(10);
         

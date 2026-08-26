@@ -323,11 +323,16 @@ export default class RunnerScene extends Phaser.Scene {
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
-        this.playerSprite = this.add.sprite(200, h - 150, 'green_circle').setDepth(10);
-        this.playerSprite.setTint(initialColor);
+        let playerTex = this.textures.exists('mam_idle') ? 'mam_idle' : 'green_circle';
+        this.playerSprite = this.add.sprite(200, h - 150, playerTex).setDepth(10);
         this.playerSprite.setOrigin(0.5, 1);
-        this.playerSprite.baseScale = 1;
-        this.playerSprite.setScale(this.playerSprite.baseScale);
+        
+        // Kích thước chuẩn tỉ lệ theo tranh vẽ của Artist
+        this.playerBaseScaleX = 0.58;
+        this.playerBaseScaleY = 0.58;
+        this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
+        this.playerSquashFactor = 1.0;
+        this.playerWasGrounded = true;
         this.registry.events.on('changedata-playerColor', (parent, color) => {
             if (this.playerSprite) this.playerSprite.setTint(color);
             if (this.aura) this.aura.setFillStyle(color, 0.35);
