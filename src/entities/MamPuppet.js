@@ -44,6 +44,12 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
         this.facingRight = true;
     }
 
+    
+    setFlipX(flip) {
+        this.facingRight = !flip;
+        this.setScale(flip ? -1 : 1, 1);
+    }
+
     updateAnimation(time, vx, vy, isGrounded) {
         let isMoving = Math.abs(vx) > 15;
 

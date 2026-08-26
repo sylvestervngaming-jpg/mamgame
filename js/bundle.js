@@ -271,6 +271,10 @@
       this.squashY = 1;
       this.facingRight = true;
     }
+    setFlipX(flip) {
+      this.facingRight = !flip;
+      this.setScale(flip ? -1 : 1, 1);
+    }
     updateAnimation(time, vx, vy, isGrounded) {
       let isMoving = Math.abs(vx) > 15;
       if (vx > 15) this.facingRight = true;
@@ -1134,11 +1138,11 @@
         if (isMovingLeft) {
           this.player.body.setVelocityX(-350);
           isMoving = true;
-          this.playerPuppet.setFlipX(true);
+          if (this.playerPuppet.setFlipX) this.playerPuppet.setFlipX(true);
         } else if (isMovingRight) {
           this.player.body.setVelocityX(350);
           isMoving = true;
-          this.playerPuppet.setFlipX(false);
+          if (this.playerPuppet.setFlipX) this.playerPuppet.setFlipX(false);
         } else {
           this.player.body.setVelocityX(0);
         }

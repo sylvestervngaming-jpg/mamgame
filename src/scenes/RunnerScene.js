@@ -736,11 +736,11 @@ export default class RunnerScene extends Phaser.Scene {
             if (isMovingLeft) {
                 this.player.body.setVelocityX(-350);
                 isMoving = true;
-                this.playerPuppet.setFlipX(true);
+                if (this.playerPuppet.setFlipX) this.playerPuppet.setFlipX(true);
             } else if (isMovingRight) {
                 this.player.body.setVelocityX(350);
                 isMoving = true;
-                this.playerPuppet.setFlipX(false);
+                if (this.playerPuppet.setFlipX) this.playerPuppet.setFlipX(false);
             } else {
                 this.player.body.setVelocityX(0);
             }
