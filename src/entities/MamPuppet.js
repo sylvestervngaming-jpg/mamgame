@@ -229,16 +229,21 @@ export default class MamPuppet extends Phaser.GameObjects.Container {
 
         } else if (isMoving) {
             // ==========================================
-            // 🏃 TRẠNG THÁI CHẠY BỘ (RUNNING)
+            // 🏃 TRẠNG THÁI CHẠY BỘ (BƯỚC ĐI TỰ NHIÊN - KHÔNG BỊ BẮT CHÉO CHỮ X)
             // ==========================================
-            let runCycle = time * 0.014;
+            let runCycle = time * 0.015;
 
-            let legSwing = Math.sin(runCycle);
-            targetLegLeftRot = legSwing * 0.60;
-            targetLegRightRot = -legSwing * 0.60;
+            // Chân trước (legRight) và Chân sau (legLeft) sải bước so le theo trục di chuyển
+            let frontCycle = Math.sin(runCycle);
+            let backCycle = Math.sin(runCycle + Math.PI);
 
-            targetLegLeftY = this.baseLegLeftY - Math.max(0, legSwing * 5.0);
-            targetLegRightY = this.baseLegRightY - Math.max(0, -legSwing * 5.0);
+            // Góc bước chân tự nhiên: Vung ra trước (+), đạp về sau (-)
+            targetLegRightRot = frontCycle * 0.48;
+            targetLegLeftRot = backCycle * 0.42;
+
+            // Nhấc bàn chân lên khỏi đất khi bước tới
+            targetLegRightY = this.baseLegRightY - Math.max(0, frontCycle * 4.5);
+            targetLegLeftY = this.baseLegLeftY - Math.max(0, backCycle * 4.5);
 
             let cloakWave = Math.sin(runCycle - 0.5) * 0.09 + Math.sin(time * 0.006) * 0.03;
             targetLeftCloakRot = -0.10 + cloakWave;

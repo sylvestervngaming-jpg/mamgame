@@ -390,12 +390,13 @@
           targetHeadY = this.baseHeadY + 1;
         }
       } else if (isMoving) {
-        let runCycle = time * 0.014;
-        let legSwing = Math.sin(runCycle);
-        targetLegLeftRot = legSwing * 0.6;
-        targetLegRightRot = -legSwing * 0.6;
-        targetLegLeftY = this.baseLegLeftY - Math.max(0, legSwing * 5);
-        targetLegRightY = this.baseLegRightY - Math.max(0, -legSwing * 5);
+        let runCycle = time * 0.015;
+        let frontCycle = Math.sin(runCycle);
+        let backCycle = Math.sin(runCycle + Math.PI);
+        targetLegRightRot = frontCycle * 0.48;
+        targetLegLeftRot = backCycle * 0.42;
+        targetLegRightY = this.baseLegRightY - Math.max(0, frontCycle * 4.5);
+        targetLegLeftY = this.baseLegLeftY - Math.max(0, backCycle * 4.5);
         let cloakWave = Math.sin(runCycle - 0.5) * 0.09 + Math.sin(time * 6e-3) * 0.03;
         targetLeftCloakRot = -0.1 + cloakWave;
         targetRightCloakRot = -0.06 - cloakWave * 0.8;
@@ -1205,21 +1206,6 @@
       }).setScrollFactor(1.1).setDepth(99);
     }
     update(time, delta) {
-      if (this.playerPuppet) {
-        this.playerPuppet.x = Math.round(this.player.x);
-        this.playerPuppet.y = Math.round(this.player.y + 40);
-        let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
-        let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
-        let inWall = this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150;
-        this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow, isPushing, inWall, this.lastWallJump);
-      }
-      let groundY = this.getTerrainY(this.player.x);
-      let slope = this.getTerrainSlope(this.player.x);
-      AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
-      if (this.isCinematic) return;
-      let pX = this.player.x;
-      let pY = this.player.y;
-      let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
       let touch = this.registry.get("touchControls");
       let isTouchLeft = !!(touch && touch.isLeft);
       let isTouchRight = !!(touch && touch.isRight);
@@ -1229,6 +1215,20 @@
       }
       let isMovingLeft = this.cursors.left && this.cursors.left.isDown || this.keyA && this.keyA.isDown || isTouchLeft;
       let isMovingRight = this.cursors.right && this.cursors.right.isDown || this.keyD && this.keyD.isDown || isTouchRight;
+      let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
+      if (this.playerPuppet) {
+        this.playerPuppet.x = Math.round(this.player.x);
+        this.playerPuppet.y = Math.round(this.player.y + 40);
+        let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
+        let inWall = this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150;
+        this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGrounded, isPushing, inWall, this.lastWallJump);
+      }
+      let groundY = this.getTerrainY(this.player.x);
+      let slope = this.getTerrainSlope(this.player.x);
+      AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
+      if (this.isCinematic) return;
+      let pX = this.player.x;
+      let pY = this.player.y;
       let isMoving = false;
       let isJumping = false;
       let isJumpPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey) || Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keyW) || isTouchJump;

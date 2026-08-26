@@ -658,29 +658,6 @@ export default class RunnerScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        // Đồng bộ vị trí và hoạt ảnh cho MamPuppet (LUÔN CHẠY)
-        if (this.playerPuppet) {
-            this.playerPuppet.x = Math.round(this.player.x);
-            this.playerPuppet.y = Math.round(this.player.y + 40);
-            let isGroundedNow = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
-            let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
-            let inWall = (this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150);
-            this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGroundedNow, isPushing, inWall, this.lastWallJump);
-        }
-
-        // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
-        let groundY = this.getTerrainY(this.player.x);
-        let slope = this.getTerrainSlope(this.player.x);
-        AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
-        
-
-        if (this.isCinematic) return;
-        
-        let pX = this.player.x;
-        let pY = this.player.y;
-
-        // SÃ¡Â»Â­ dÃ¡Â»Â¥ng Arcade Physics Ã„â€˜Ã¡Â»Æ’ kiÃ¡Â»Æ’m tra Ã„â€˜Ã¡Â»Â©ng trÃƒÂªn Ã„â€˜Ã¡ÂºÂ¥t (hoÃ¡ÂºÂ·c hÃ¡Â»â„¢p)
-        let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
         let touch = this.registry.get("touchControls");
         let isTouchLeft = !!(touch && touch.isLeft);
         let isTouchRight = !!(touch && touch.isRight);
@@ -689,6 +666,26 @@ export default class RunnerScene extends Phaser.Scene {
 
         let isMovingLeft = (this.cursors.left && this.cursors.left.isDown) || (this.keyA && this.keyA.isDown) || isTouchLeft;
         let isMovingRight = (this.cursors.right && this.cursors.right.isDown) || (this.keyD && this.keyD.isDown) || isTouchRight;
+        let isGrounded = this.player.body.touching.down || this.player.body.blocked.down || this.player.body.onFloor();
+
+        // Đồng bộ vị trí và hoạt ảnh cho MamPuppet (LUÔN CHẠY)
+        if (this.playerPuppet) {
+            this.playerPuppet.x = Math.round(this.player.x);
+            this.playerPuppet.y = Math.round(this.player.y + 40);
+            let isPushing = !!(this.isAttachedToBox && (isMovingLeft || isMovingRight));
+            let inWall = (this.player.x > 5160 && this.player.x < 5320 && this.player.y > 150);
+            this.playerPuppet.updateAnimation(time, this.player.body.velocity.x, this.player.body.velocity.y, isGrounded, isPushing, inWall, this.lastWallJump);
+        }
+
+        // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
+        let groundY = this.getTerrainY(this.player.x);
+        let slope = this.getTerrainSlope(this.player.x);
+        AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
+
+        if (this.isCinematic) return;
+        
+        let pX = this.player.x;
+        let pY = this.player.y;
 
         let isMoving = false;
         let isJumping = false;
