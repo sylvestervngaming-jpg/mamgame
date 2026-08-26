@@ -313,28 +313,36 @@ export default class RunnerScene extends Phaser.Scene {
         let initialColor = this.registry.get('playerColor') || 0x2ecc71;
         this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0x000000, 0.6).setDepth(8);
 
-        // Aura vầng sáng dịu nhẹ ôm sát thân Mầm
-        this.aura = this.add.ellipse(200, h - 155, 65, 85, initialColor, 0.22).setBlendMode('ADD').setDepth(9);
+        // Vầng sáng Aura ôm sát thân Mầm (Tâm tại y - 50, rộng 46px, cao 90px)
+        this.aura = this.add.ellipse(200, h - 150 - 50, 46, 88, initialColor, 0.2).setBlendMode('ADD').setDepth(9);
 
-        // Texture Mam
         this.player.body.setGravityY(1200);
         this.player.body.setCollideWorldBounds(true);
 
-        let playerTex = this.textures.exists('mam_idle') ? 'mam_idle' : 'green_circle';
-        this.playerSprite = this.add.sprite(200, h - 150, playerTex).setDepth(10);
+        // Sprite nhân vật Mầm
+        let initialTex = this.textures.exists('mam_idle') ? 'mam_idle' : 'green_circle';
+        this.playerSprite = this.add.sprite(200, h - 150, initialTex).setDepth(10);
         this.playerSprite.setOrigin(0.5, 1);
-        
-        // Kích thước chuẩn
-        this.playerBaseScaleX = 0.58;
-        this.playerBaseScaleY = 0.58;
-        this.playerSprite.baseScale = 0.58;
-        this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
+        this.playerSprite.setDisplaySize(48, 102);
+
+        // Tự động gán texture mam_idle ngay khi tải xong từ mạng
+        if (!this.textures.exists('mam_idle')) {
+            this.load.image('mam_idle', 'assets/sprites/mam_idle.png');
+            this.load.once('filecomplete-image-mam_idle', () => {
+                if (this.playerSprite) {
+                    this.playerSprite.setTexture('mam_idle');
+                    this.playerSprite.setDisplaySize(48, 102);
+                }
+            });
+            this.load.start();
+        }
+
         this.playerSquashFactor = 1.0;
         this.playerWasGrounded = true;
         this.registry.events.on('changedata-playerColor', (parent, color) => {
-            if (this.playerSprite) this.playerSprite.setTint(color);
-            if (this.aura) this.aura.setFillStyle(color, 0.35);
+            if (this.aura) this.aura.setFillStyle(color, 0.2);
         });
+
         this.playerEmitter = this.add.particles(0, 0, 'firefly', {
             speed: { min: -15, max: 15 },
             scale: { start: 0.6, end: 0 },
@@ -674,7 +682,7 @@ export default class RunnerScene extends Phaser.Scene {
         // Sync sprite to invisible physics body LUÃƒâ€N LUÃƒâ€N CHÃ¡ÂºÂ Y
         this.playerSprite.x = this.player.x;
         this.playerSprite.y = this.player.y + 40;
-        if (this.aura) { this.aura.setPosition(this.playerSprite.x, this.playerSprite.y - 25); }
+        
 
         // --- BÓNG ĐỔ NGHIÊNG & CHIẾU SÁNG REALTIME ---
         let groundY = this.getTerrainY(this.player.x);

@@ -42,6 +42,11 @@ export default class BootScene extends Phaser.Scene {
             g.fillStyle(0xffffff, 0.5);
             g.fillCircle(8, 8, 8);
         });
+        
+        AssetManager.generateAndSave(this, 'green_circle', 50, 50, (g) => {
+            g.fillStyle(0x2ecc71, 1);
+            g.fillCircle(25, 25, 25);
+        });
         this.scene.start('MenuScene');
     }
 }

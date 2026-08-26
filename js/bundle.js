@@ -110,6 +110,10 @@
         g.fillStyle(16777215, 0.5);
         g.fillCircle(8, 8, 8);
       });
+      AssetManager.generateAndSave(this, "green_circle", 50, 50, (g) => {
+        g.fillStyle(3066993, 1);
+        g.fillCircle(25, 25, 25);
+      });
       this.scene.start("MenuScene");
     }
   };
@@ -691,21 +695,27 @@
       this.physics.add.collider(this.player, this.wallJumpRight);
       let initialColor = this.registry.get("playerColor") || 3066993;
       this.shadow = this.add.ellipse(200, h - 110, 50, 14, 0, 0.6).setDepth(8);
-      this.aura = this.add.ellipse(200, h - 155, 65, 85, initialColor, 0.22).setBlendMode("ADD").setDepth(9);
+      this.aura = this.add.ellipse(200, h - 150 - 50, 46, 88, initialColor, 0.2).setBlendMode("ADD").setDepth(9);
       this.player.body.setGravityY(1200);
       this.player.body.setCollideWorldBounds(true);
-      let playerTex = this.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
-      this.playerSprite = this.add.sprite(200, h - 150, playerTex).setDepth(10);
+      let initialTex = this.textures.exists("mam_idle") ? "mam_idle" : "green_circle";
+      this.playerSprite = this.add.sprite(200, h - 150, initialTex).setDepth(10);
       this.playerSprite.setOrigin(0.5, 1);
-      this.playerBaseScaleX = 0.58;
-      this.playerBaseScaleY = 0.58;
-      this.playerSprite.baseScale = 0.58;
-      this.playerSprite.setScale(this.playerBaseScaleX, this.playerBaseScaleY);
+      this.playerSprite.setDisplaySize(48, 102);
+      if (!this.textures.exists("mam_idle")) {
+        this.load.image("mam_idle", "assets/sprites/mam_idle.png");
+        this.load.once("filecomplete-image-mam_idle", () => {
+          if (this.playerSprite) {
+            this.playerSprite.setTexture("mam_idle");
+            this.playerSprite.setDisplaySize(48, 102);
+          }
+        });
+        this.load.start();
+      }
       this.playerSquashFactor = 1;
       this.playerWasGrounded = true;
       this.registry.events.on("changedata-playerColor", (parent, color) => {
-        if (this.playerSprite) this.playerSprite.setTint(color);
-        if (this.aura) this.aura.setFillStyle(color, 0.35);
+        if (this.aura) this.aura.setFillStyle(color, 0.2);
       });
       this.playerEmitter = this.add.particles(0, 0, "firefly", {
         speed: { min: -15, max: 15 },
@@ -979,9 +989,6 @@
     update() {
       this.playerSprite.x = this.player.x;
       this.playerSprite.y = this.player.y + 40;
-      if (this.aura) {
-        this.aura.setPosition(this.playerSprite.x, this.playerSprite.y - 25);
-      }
       let groundY = this.getTerrainY(this.player.x);
       let slope = this.getTerrainSlope(this.player.x);
       AtmosphereFX.updateDirectionalShadow(this.shadow, this.player.x, this.player.y + 40, groundY, slope, 0.45);
